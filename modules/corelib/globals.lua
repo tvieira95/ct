@@ -303,6 +303,28 @@ if UIMinimap then
   UIMinimap.setLevelSeparator = UIMinimap.setLevelSeparator or function(self, levelSeparator)
     self.levelSeparator = levelSeparator
   end
+  UIMinimap.clearWaypoints = UIMinimap.clearWaypoints or function(self)
+    self._minimapWaypoints = {}
+    return self
+  end
+  UIMinimap.clearRoutePath = UIMinimap.clearRoutePath or function(self)
+    self._minimapRoutePath = {}
+    return self
+  end
+  UIMinimap.setDrawWaypoints = UIMinimap.setDrawWaypoints or function(self, enabled)
+    self._drawWaypoints = enabled and true or false
+    return self
+  end
+  UIMinimap.makeWaypoints = UIMinimap.makeWaypoints or function(self, coordinates, floor)
+    self._minimapWaypoints = self._minimapWaypoints or {}
+    self._minimapWaypoints[floor or 0] = coordinates or {}
+    return self
+  end
+  UIMinimap.makeRouth = UIMinimap.makeRouth or function(self, coordinates, floor)
+    self._minimapRoutePath = self._minimapRoutePath or {}
+    self._minimapRoutePath[floor or 0] = coordinates or {}
+    return self
+  end
   UIMinimap.hasClickedRegion = UIMinimap.hasClickedRegion or function()
     return false
   end

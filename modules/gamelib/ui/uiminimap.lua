@@ -1,9 +1,15 @@
+local MIN_ZOOM_LIMIT = -1
+
 function UIMinimap:onCreate()
   self.autowalk = true
 end
 
 function UIMinimap:onSetup()
   self.flagWindow = nil
+  self.floorUpWidget = self:getChildById('floorUpButton')
+  self.floorDownWidget = self:getChildById('floorDownButton')
+  self.zoomInWidget = self:getChildById('zoomInButton')
+  self.zoomOutWidget = self:getChildById('zoomOutButton')
   self.flags = {}
   self.partyColorMode = 1 -- [0 == hidden, 1 == normal color, 2 == vocation colors
   self:setPartyColorMode(self.partyColorMode)
@@ -24,6 +30,12 @@ function UIMinimap:onSetup()
     onAddAutomapFlag = self.onAddAutomapFlag,
     onRemoveAutomapFlag = self.onRemoveAutomapFlag,
   })
+
+  if self.setMinZoom then
+    self:setMinZoom(MIN_ZOOM_LIMIT)
+  elseif self.setMixZoom then
+    self:setMixZoom(MIN_ZOOM_LIMIT)
+  end
 end
 
 function UIMinimap:onDestroy()
@@ -52,13 +64,13 @@ function UIMinimap:onCameraPositionChange(cameraPos)
 end
 
 function UIMinimap:hideFloor()
-  self.floorUpWidget:hide()
-  self.floorDownWidget:hide()
+  if self.floorUpWidget then self.floorUpWidget:hide() end
+  if self.floorDownWidget then self.floorDownWidget:hide() end
 end
 
 function UIMinimap:hideZoom()
-  self.zoomInWidget:hide()
-  self.zoomOutWidget:hide()
+  if self.zoomInWidget then self.zoomInWidget:hide() end
+  if self.zoomOutWidget then self.zoomOutWidget:hide() end
 end
 
 function UIMinimap:disableAutoWalk()

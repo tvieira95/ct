@@ -38,6 +38,12 @@ UIMinimap::UIMinimap()
     m_maxZoom = 5;
 }
 
+void UIMinimap::ensureLayout()
+{
+    if (!m_layout)
+        m_layout = std::make_shared<UIMapAnchorLayout>(static_self_cast<UIWidget>());
+}
+
 void UIMinimap::drawSelf(Fw::DrawPane drawPane)
 {
     UIWidget::drawSelf(drawPane);
@@ -45,8 +51,7 @@ void UIMinimap::drawSelf(Fw::DrawPane drawPane)
     if(drawPane != Fw::ForegroundPane)
         return;
 
-    if (!m_layout)
-        m_layout = std::make_shared<UIMapAnchorLayout>(static_self_cast<UIWidget>());
+    ensureLayout();
 
     g_minimap.draw(getPaddingRect(), getCameraPosition(), m_scale, m_color);
 }
@@ -67,8 +72,8 @@ bool UIMinimap::setZoom(int zoom)
         m_scale = 1.0f * (1 << std::abs(zoom));
     else
         m_scale = 1;
-    if (m_layout)
-        m_layout->update();
+    ensureLayout();
+    m_layout->update();
 
     onZoomChange(zoom, oldZoom);
     return true;
@@ -88,8 +93,8 @@ void UIMinimap::setCameraPosition(const Position& pos)
 
     Position oldPos = m_cameraPosition;
     m_cameraPosition = pos;
-    if (m_layout)
-        m_layout->update();
+    ensureLayout();
+    m_layout->update();
 
     onCameraPositionChange(pos, oldPos);
 }
@@ -129,6 +134,7 @@ Position UIMinimap::getTilePosition(const Point& mousePos)
 
 void UIMinimap::anchorPosition(const UIWidgetPtr& anchoredWidget, Fw::AnchorEdge anchoredEdge, const Position& hookedPosition, Fw::AnchorEdge hookedEdge)
 {
+    ensureLayout();
     UIMapAnchorLayoutPtr layout = m_layout->static_self_cast<UIMapAnchorLayout>();
     VALIDATE(layout);
     layout->addPositionAnchor(anchoredWidget, anchoredEdge, hookedPosition, hookedEdge);
@@ -136,6 +142,7 @@ void UIMinimap::anchorPosition(const UIWidgetPtr& anchoredWidget, Fw::AnchorEdge
 
 void UIMinimap::fillPosition(const UIWidgetPtr& anchoredWidget, const Position& hookedPosition)
 {
+    ensureLayout();
     UIMapAnchorLayoutPtr layout = m_layout->static_self_cast<UIMapAnchorLayout>();
     VALIDATE(layout);
     layout->fillPosition(anchoredWidget, hookedPosition);
@@ -143,6 +150,7 @@ void UIMinimap::fillPosition(const UIWidgetPtr& anchoredWidget, const Position& 
 
 void UIMinimap::centerInPosition(const UIWidgetPtr& anchoredWidget, const Position& hookedPosition)
 {
+    ensureLayout();
     UIMapAnchorLayoutPtr layout = m_layout->static_self_cast<UIMapAnchorLayout>();
     VALIDATE(layout);
     layout->centerInPosition(anchoredWidget, hookedPosition);

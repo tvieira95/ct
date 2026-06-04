@@ -1055,6 +1055,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMinimap>("setZoom", &UIMinimap::setZoom);
     g_lua.bindClassMemberFunction<UIMinimap>("setupHouse", &UIMinimap::setupHouse);
     g_lua.bindClassMemberFunction<UIMinimap>("setMixZoom", &UIMinimap::setMinZoom);
+    g_lua.bindClassMemberFunction<UIMinimap>("setMinZoom", &UIMinimap::setMinZoom);
     g_lua.bindClassMemberFunction<UIMinimap>("setMaxZoom", &UIMinimap::setMaxZoom);
     g_lua.bindClassMemberFunction<UIMinimap>("setCameraPosition", &UIMinimap::setCameraPosition);
     g_lua.bindClassMemberFunction<UIMinimap>("floorUp", &UIMinimap::floorUp);
