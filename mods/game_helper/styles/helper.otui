@@ -1,165 +1,3 @@
-HelperTracker < MiniWindow
-  id: helperMiniWindow
-  !text: tr('Helper Stats')
-  icon: /images/icons/icon-healing
-  height: 145
-  &type: 'helper'
-  MiniWindowContents
-    id: contentsPanel
-    anchors.fill: parent
-    margin: 20 9 5 9
-    Label
-      id: helperLabel
-      anchors.top: parent.top
-      anchors.left: parent.left
-      !text: tr('General Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-    UIWidget
-      id: hierarchy
-      size: 7 7
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 5
-      margin-left: 5
-      image-source: /images/ui/hierarchy-branch
-      phantom: true
-    UIWidget
-      id: helperStatus
-      size: 155 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('Inactive')
-      margin-top: -3
-      margin-left: 5
-      font: $var-cip-font
-      color: $var-text-cip-store-red
-      text-auto-resize: true
-      tooltip-delayed: true
-
-    Label
-      id: targetLabel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 3
-      !text: tr('Target Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-    UIWidget
-      id: hierarchy
-      size: 7 7
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 5
-      margin-left: 5
-      image-source: /images/ui/hierarchy-branch
-      phantom: true
-    UIWidget
-      id: targetStatus
-      size: 155 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('Inactive')
-      margin-top: -3
-      margin-left: 5
-      font: $var-cip-font
-      color: $var-text-cip-store-red
-      text-auto-resize: true
-      tooltip-delayed: true
-
-    Label
-      id: shooterLabel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 3
-      !text: tr('Shooter Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-    UIWidget
-      id: hierarchy
-      size: 7 7
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 5
-      margin-left: 5
-      image-source: /images/ui/hierarchy-branch
-      phantom: true
-    UIWidget
-      id: shooterStatus
-      size: 155 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('Inactive')
-      margin-top: -3
-      margin-left: 5
-      font: $var-cip-font
-      color: $var-text-cip-store-red
-      text-auto-resize: true
-      tooltip-delayed: true
-
-    Label
-      id: currentPresetLabel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 3
-      !text: tr('Shooter Preset')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-    UIWidget
-      id: hierarchy
-      size: 7 7
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      margin-top: 5
-      margin-left: 5
-      image-source: /images/ui/hierarchy-branch
-      phantom: true
-    UIWidget
-      id: currentPresetName
-      size: 155 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('No data yet')
-      margin-top: -3
-      margin-left: 5
-      font: $var-cip-font
-      color: $var-text-cip-color-green
-      text-auto-resize: true
-      tooltip-delayed: true
-
-    Button
-      id: openHelper
-      size: 108 20
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      !text: tr('Open Helper')
-      margin-top: 5
-      margin-left: 24
-      @onClick: modules.game_helper:show(true)
-
-  UIWidget
-    id: miniborder
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    image-source: /images/ui/miniborder
-    size: 14 14
-    margin-left: 2
-    margin-bottom: 2
-  ResizeBorder
-    id: bottomResizeBorder
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    height: 3
-    minimum: 155
-    maximum: 155
-    margin-left: 3
-    margin-right: 3
-
 HelperRules < NewHeadlessWindow
   id: helperRules
   anchors.horizontalCenter: parent.horizontalCenter
@@ -170,7 +8,7 @@ HelperRules < NewHeadlessWindow
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: -33
-    image-source: /images/game/tutorial/backdrop_crestr
+    image-source: /images/game/tutorial/backdrop_crest
     phantom: true
 
   Panel
@@ -188,7 +26,7 @@ HelperRules < NewHeadlessWindow
       text-align: center
       padding: 1
       focusable: false
-      background-color: #484848
+      background-color: $var-textlist-odd
     
     HorizontalSeparator
       id: separator
@@ -204,13 +42,11 @@ HelperRules < NewHeadlessWindow
       size: 43 20
       enabled: false
       @onClick: modules.game_helper:onHelperTermConditionNext()
-    Button
+    CloseButton
       id: close
       anchors.bottom: parent.bottom
       anchors.right: prev.left
       margin-right: 5
-      !text: tr('Close')
-      size: 43 20
       @onClick: modules.game_helper.closeTerms()
     CheckBox
       id: termCondition
@@ -218,11 +54,11 @@ HelperRules < NewHeadlessWindow
       anchors.bottom: parent.bottom
       anchors.left: parent.left
       text-offset: 16 -2
-      !text: tr('I agree with Astra Terms and Conditions.')
-      !tooltip: tr('I have read and I agree to the Extended Astra Service Agreement and the Astra Privacy Policy.')
+      !text: tr('I agree with OTC Terms and Conditions.')
+      !tooltip: tr('I have read and I agree to the Extended OTC Service Agreement and the OTC Privacy Policy.')
       margin-bottom: 5
-      font: $var-cip-font
-      color: $var-text-cip-color
+      font: $var-main-font
+      color: $var-text-color
       text-auto-resize: true
       @onCheckChange: modules.game_helper.onHelperTermCondition(self:getId(), self:isChecked())
 
@@ -230,15 +66,15 @@ HelperRules < NewHeadlessWindow
 PlayerName < Label
   focusable: true
   height: 15
-  font: $var-cip-font
-  color: $var-text-cip-color-grey
+  font: $var-main-font
+  color: #AAAAAA
 
   $focus:
-    background-color: #484848
-    color: #f4f4f4
+    background-color: $var-textlist-odd
+    color: $var-text-cip-color-highlight
   $!focus:
     background-color: alpha
-    color: #c0c0c0
+    color: $var-text-cip-color
 
 PotionItem < UIItem
   size: 32 32
@@ -258,6 +94,839 @@ RuneItem < UIItem
   anchors.top: parent.top
   anchors.left: parent.left
 
+FoodItem < UIItem
+  size: 32 32
+  phantom: true
+  draggable: false
+  virtual: true
+  priceable: false
+  anchors.top: parent.top
+  anchors.left: parent.left
+
+SpecialFoodsWindow < MainWindow
+  id: specialFoodsWindow
+  size: 440 260
+  !text: tr('Special Foods')
+  @onEscape: modules.game_helper.specialFoodsClose()
+
+  Panel
+    id: hpFoodsPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: specialFoodsSeparator.top
+    width: 200
+    margin-top: 1
+    margin-bottom: 5
+    image-source: /images/ui/t2pixel-up-frame-borderimage
+    image-border: 18
+
+    Label
+      id: hpTitle
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 3
+      margin-left: 5
+      !text: tr('HP Foods')
+      font: $var-main-font
+      color: #d94a3a
+      text-auto-resize: true
+
+    Label
+      id: hpPriorityHeader
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 3
+      margin-right: 5
+      !text: tr('Priority')
+      font: $var-main-font
+      color: $var-text-color
+      text-auto-resize: true
+
+    UIButton
+      id: hpFoodSlot0
+      size: 34 34
+      anchors.top: hpTitle.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 3
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: hpFoodEnable0
+      width: 12
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.left: hpFoodSlot0.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('hp', 1, self:isChecked())
+    UIButton
+      id: hpFoodRmvPercent0
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.left: hpFoodEnable0.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 1, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: hpFoodPercentBg0
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.left: hpFoodRmvPercent0.right
+      margin-left: 1
+      Label
+        id: hpFoodPercentLabel0
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('80%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodAddPercent0
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.left: hpFoodPercentBg0.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 1, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: hpFoodAddPriority0
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 1, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: hpFoodPriorityBg0
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.right: hpFoodAddPriority0.left
+      margin-right: 1
+      Label
+        id: hpFoodPriorityLabel0
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('1')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodRmvPriority0
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot0.verticalCenter
+      anchors.right: hpFoodPriorityBg0.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 1, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+    UIButton
+      id: hpFoodSlot1
+      size: 34 34
+      anchors.top: hpFoodSlot0.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 4
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: hpFoodEnable1
+      width: 12
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.left: hpFoodSlot1.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('hp', 2, self:isChecked())
+    UIButton
+      id: hpFoodRmvPercent1
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.left: hpFoodEnable1.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 2, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: hpFoodPercentBg1
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.left: hpFoodRmvPercent1.right
+      margin-left: 1
+      Label
+        id: hpFoodPercentLabel1
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('80%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodAddPercent1
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.left: hpFoodPercentBg1.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 2, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: hpFoodAddPriority1
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 2, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: hpFoodPriorityBg1
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.right: hpFoodAddPriority1.left
+      margin-right: 1
+      Label
+        id: hpFoodPriorityLabel1
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('2')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodRmvPriority1
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot1.verticalCenter
+      anchors.right: hpFoodPriorityBg1.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 2, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+    UIButton
+      id: hpFoodSlot2
+      size: 34 34
+      anchors.top: hpFoodSlot1.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 4
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: hpFoodEnable2
+      width: 12
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.left: hpFoodSlot2.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('hp', 3, self:isChecked())
+    UIButton
+      id: hpFoodRmvPercent2
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.left: hpFoodEnable2.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 3, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: hpFoodPercentBg2
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.left: hpFoodRmvPercent2.right
+      margin-left: 1
+      Label
+        id: hpFoodPercentLabel2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('80%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodAddPercent2
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.left: hpFoodPercentBg2.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 3, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: hpFoodAddPriority2
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 3, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: hpFoodPriorityBg2
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.right: hpFoodAddPriority2.left
+      margin-right: 1
+      Label
+        id: hpFoodPriorityLabel2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('3')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodRmvPriority2
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot2.verticalCenter
+      anchors.right: hpFoodPriorityBg2.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 3, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+    UIButton
+      id: hpFoodSlot3
+      size: 34 34
+      anchors.top: hpFoodSlot2.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 4
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: hpFoodEnable3
+      width: 12
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.left: hpFoodSlot3.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('hp', 4, self:isChecked())
+    UIButton
+      id: hpFoodRmvPercent3
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.left: hpFoodEnable3.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 4, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: hpFoodPercentBg3
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.left: hpFoodRmvPercent3.right
+      margin-left: 1
+      Label
+        id: hpFoodPercentLabel3
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('80%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodAddPercent3
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.left: hpFoodPercentBg3.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('hp', 4, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: hpFoodAddPriority3
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 4, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: hpFoodPriorityBg3
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.right: hpFoodAddPriority3.left
+      margin-right: 1
+      Label
+        id: hpFoodPriorityLabel3
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('4')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: hpFoodRmvPriority3
+      size: 10 24
+      anchors.verticalCenter: hpFoodSlot3.verticalCenter
+      anchors.right: hpFoodPriorityBg3.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('hp', 4, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+  Panel
+    id: manaFoodsPanel
+    anchors.top: parent.top
+    anchors.left: hpFoodsPanel.right
+    anchors.right: parent.right
+    anchors.bottom: specialFoodsSeparator.top
+    margin-top: 1
+    margin-left: 5
+    margin-bottom: 5
+    image-source: /images/ui/t2pixel-up-frame-borderimage
+    image-border: 18
+
+    Label
+      id: manaTitle
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 3
+      margin-left: 5
+      !text: tr('Mana Foods')
+      font: $var-main-font
+      color: #3a8ad9
+      text-auto-resize: true
+
+    Label
+      id: manaPriorityHeader
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 3
+      margin-right: 5
+      !text: tr('Priority')
+      font: $var-main-font
+      color: $var-text-color
+      text-auto-resize: true
+
+    UIButton
+      id: manaFoodSlot0
+      size: 34 34
+      anchors.top: manaTitle.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 3
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: manaFoodEnable0
+      width: 12
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.left: manaFoodSlot0.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('mana', 1, self:isChecked())
+    UIButton
+      id: manaFoodRmvPercent0
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.left: manaFoodEnable0.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 1, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: manaFoodPercentBg0
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.left: manaFoodRmvPercent0.right
+      margin-left: 1
+      Label
+        id: manaFoodPercentLabel0
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('60%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodAddPercent0
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.left: manaFoodPercentBg0.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 1, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: manaFoodAddPriority0
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 1, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: manaFoodPriorityBg0
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.right: manaFoodAddPriority0.left
+      margin-right: 1
+      Label
+        id: manaFoodPriorityLabel0
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('1')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodRmvPriority0
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot0.verticalCenter
+      anchors.right: manaFoodPriorityBg0.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 1, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+    UIButton
+      id: manaFoodSlot1
+      size: 34 34
+      anchors.top: manaFoodSlot0.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 4
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: manaFoodEnable1
+      width: 12
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.left: manaFoodSlot1.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('mana', 2, self:isChecked())
+    UIButton
+      id: manaFoodRmvPercent1
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.left: manaFoodEnable1.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 2, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: manaFoodPercentBg1
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.left: manaFoodRmvPercent1.right
+      margin-left: 1
+      Label
+        id: manaFoodPercentLabel1
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('60%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodAddPercent1
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.left: manaFoodPercentBg1.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 2, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: manaFoodAddPriority1
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 2, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: manaFoodPriorityBg1
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.right: manaFoodAddPriority1.left
+      margin-right: 1
+      Label
+        id: manaFoodPriorityLabel1
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('2')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodRmvPriority1
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot1.verticalCenter
+      anchors.right: manaFoodPriorityBg1.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 2, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+    UIButton
+      id: manaFoodSlot2
+      size: 34 34
+      anchors.top: manaFoodSlot1.bottom
+      anchors.left: parent.left
+      margin-left: 2
+      margin-top: 4
+      image-source: /images/game/actionbar/actionbarslot
+    CheckBox
+      id: manaFoodEnable2
+      width: 12
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.left: manaFoodSlot2.right
+      margin-left: 3
+      change-cursor-image: false
+      @onCheckChange: modules.game_helper.toggleSpecialFood('mana', 3, self:isChecked())
+    UIButton
+      id: manaFoodRmvPercent2
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.left: manaFoodEnable2.right
+      margin-left: 3
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 3, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+    FlatPanel
+      id: manaFoodPercentBg2
+      size: 38 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.left: manaFoodRmvPercent2.right
+      margin-left: 1
+      Label
+        id: manaFoodPercentLabel2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('60%%')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodAddPercent2
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.left: manaFoodPercentBg2.right
+      margin-left: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPercent('mana', 3, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    UIButton
+      id: manaFoodAddPriority2
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.right: parent.right
+      margin-right: 2
+      image-source: /images/ui/percent-buttons
+      image-clip: 10 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 3, 1) end, 150)
+      $hover !pressed:
+        image-clip: 10 24 10 24
+      $pressed:
+        image-clip: 10 48 10 24
+    FlatPanel
+      id: manaFoodPriorityBg2
+      size: 24 24
+      image-source: /images/ui/percentBg
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.right: manaFoodAddPriority2.left
+      margin-right: 1
+      Label
+        id: manaFoodPriorityLabel2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-top: 4
+        !text: tr('3')
+        font: $var-main-font
+        color: $var-text-color
+        text-auto-resize: true
+    UIButton
+      id: manaFoodRmvPriority2
+      size: 10 24
+      anchors.verticalCenter: manaFoodSlot2.verticalCenter
+      anchors.right: manaFoodPriorityBg2.left
+      margin-right: 1
+      image-source: /images/ui/percent-buttons
+      image-clip: 0 0 10 24
+      @onSetup: |
+        g_mouse.bindAutoPress(self, function() modules.game_helper.updateSpecialFoodPriority('mana', 3, -1) end, 150)
+      $hover !pressed:
+        image-clip: 0 24 10 24
+      $pressed:
+        image-clip: 0 48 10 24
+
+  HorizontalSeparator
+    id: specialFoodsSeparator
+    anchors.bottom: closeSpecialFoods.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 5
+
+  Button
+    id: closeSpecialFoods
+    size: 60 20
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 2
+    text: Close
+    @onClick: modules.game_helper.specialFoodsClose()
+
 HealingPanel < Panel
   anchors.fill: parent
   Panel
@@ -275,8 +944,8 @@ HealingPanel < Panel
       anchors.horizontalCenter: parent.horizontalCenter
       margin-top: 2
       !text: tr('Auto Healing Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
+      font: $var-main-font
+      color: #AAAAAA
       text-auto-resize: true
 
     Panel
@@ -292,8 +961,8 @@ HealingPanel < Panel
         anchors.top: parent.top
         anchors.left: parent.left
         !text: tr('Spell Healing')
-        font: $var-cip-font
-        color: $var-text-cip-color
+        font: $var-main-font
+        color: $var-text-color
         text-auto-resize: true
 
       UIButton
@@ -304,8 +973,7 @@ HealingPanel < Panel
         margin-top: 7
         margin-left: 2
         image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
+        !tooltip: tr('Click to select a Spell')
 
       UIButton
         id: rmvPercentButton0
@@ -338,8 +1006,8 @@ HealingPanel < Panel
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -359,13 +1027,11 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIWidget
-        size: 12 12
+      UITooltipGrey
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         !tooltip: tr('Cast a healing spell when your health reaches the defined percentage.')
 
       UIButton
@@ -376,8 +1042,7 @@ HealingPanel < Panel
         margin-top: 5
         margin-left: 2
         image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
+        !tooltip: tr('Click to select a Spell')
 
       UIButton
         id: rmvPercentButton1
@@ -410,8 +1075,8 @@ HealingPanel < Panel
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -431,13 +1096,11 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIWidget
-        size: 12 12
+      UITooltipGrey
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         !tooltip: tr('Cast a healing spell when your health reaches the defined percentage.')
 
       UIButton
@@ -448,8 +1111,8 @@ HealingPanel < Panel
         margin-top: 5
         margin-left: 2
         image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
+        !tooltip: tr('Click to select a Spell')
+        visible: false
 
       UIButton
         id: rmvPercentButton2
@@ -460,6 +1123,7 @@ HealingPanel < Panel
         margin-left: 5
         image-source: /images/ui/percent-buttons
         image-clip: 0 0 10 24
+        visible: false
         @onSetup: |
           g_mouse.bindAutoPress(self, function() updateHealingPercent(self:getId()) end, 150)
         $hover !pressed:
@@ -476,14 +1140,15 @@ HealingPanel < Panel
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 2
+        visible: false
         Label
           id: spellPercentLabel2
           anchors.top: parent.top
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -494,6 +1159,7 @@ HealingPanel < Panel
         margin-left: 2
         image-source: /images/ui/percent-buttons
         image-clip: 10 0 10 24
+        visible: false
         @onSetup: |
           g_mouse.bindAutoPress(self, function() updateHealingPercent(self:getId()) end, 150)
         $hover !pressed:
@@ -503,13 +1169,11 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIWidget
-        size: 12 12
+      UITooltipGrey
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         !tooltip: tr('Cast a healing spell when your health reaches the defined percentage.')
 
     VerticalSeparator
@@ -534,8 +1198,8 @@ HealingPanel < Panel
         anchors.top: parent.top
         anchors.left: parent.left
         !text: tr('Potion Healing')
-        font: $var-cip-font
-        color: $var-text-cip-color
+        font: $var-main-font
+        color: $var-text-color
         text-auto-resize: true
 
       UIButton
@@ -581,8 +1245,8 @@ HealingPanel < Panel
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('50%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -602,16 +1266,14 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIButton
+      UITooltipGrey
         id: priority0
-        size: 12 12
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         @onClick: onCheckPotionPriority(self)
-        !tooltip: tr('')
+        !tooltip: tr('Click to toggle between Health (red) and Mana (blue) healing priority.')
 
       UIButton
         id: potionButton1
@@ -656,8 +1318,8 @@ HealingPanel < Panel
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('50%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -677,16 +1339,14 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIButton
+      UITooltipGrey
         id: priority1
-        size: 12 12
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         @onClick: onCheckPotionPriority(self)
-        !tooltip: tr('')
+        !tooltip: tr('Click to toggle between Health (red) and Mana (blue) healing priority.')
 
       UIButton
         id: potionButton2
@@ -732,8 +1392,8 @@ HealingPanel < Panel
           anchors.horizontalCenter: parent.horizontalCenter
           margin-top: 4
           !text: tr('50%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
+          font: $var-main-font
+          color: $var-text-color
           text-auto-resize: true
 
       UIButton
@@ -753,20 +1413,72 @@ HealingPanel < Panel
         $disabled:
           image-clip: 10 48 10 24
 
-      UIButton
+      UITooltipGrey
         id: priority2
-        size: 12 12
         anchors.top: prev.top
         anchors.left: prev.right
         margin-left: 5
         margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
         @onClick: onCheckPotionPriority(self)
-        !tooltip: tr('')
+        !tooltip: tr('Click to toggle between Health (red) and Mana (blue) healing priority.')
+
+  Button
+    id: specialFoodsButton
+    height: 24
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 7
+    text: Special Foods
+    font: $var-main-font
+    @onClick: modules.game_helper.specialFoodsOpen()
+
+  Panel
+    id: healingTargetModePanel
+    height: 24
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 7
+    image-source: /images/ui/button-grey-up
+    image-border: 5
+    enabled: true
+    visible: false
+    Label
+      id: targetModeLabel
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 10
+      !text: tr('Heal Target:')
+      font: $var-main-font
+      color: #AAAAAA
+      text-auto-resize: true
+    CheckBox
+      id: targetModeScreen
+      anchors.left: targetModeLabel.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 10
+      width: 70
+      !text: tr('Screen')
+      font: $var-main-font
+      color: $var-text-color
+      text-offset: 13 0
+      change-cursor-image: false
+    CheckBox
+      id: targetModeParty
+      anchors.left: targetModeScreen.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 10
+      width: 60
+      !text: tr('Party')
+      font: $var-main-font
+      color: $var-text-color
+      text-offset: 13 0
+      change-cursor-image: false
 
   Panel
     id: friendHealingPanel
-    height: 120
+    height: 145
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -780,188 +1492,251 @@ HealingPanel < Panel
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       margin-top: 1
-      !text: tr('Friend Healing Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
+      !text: tr('Heal Friend Helper')
+      font: $var-main-font
+      color: #AAAAAA
       text-auto-resize: true
     Panel
-      id: firstPanel
-      anchors.top: prev.bottom
+      id: vocFriendPanel
+      anchors.top: friendTitle.bottom
       anchors.left: parent.left
-      anchors.right: separator1.left
-      anchors.bottom: parent.bottom
-      margin: 5 5 5 5
-      focusable: true
-      Label
-        id: selectFriendLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        !text: tr('Select a Friend')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 2
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('You must be in a party to assign a player to be healed')
-      TextList
-        id: friendList
-        height: 72
-        anchors.top: selectFriendLabel.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 7
-        padding: 1
-        focusable: true
-        vertical-scrollbar: friendListScrollBar
-        background-color: #484848
-      VerticalScrollBar
-        id: friendListScrollBar
-        anchors.top: prev.top
-        anchors.right: prev.right
-        anchors.bottom: prev.bottom
-        margin: 1 1 1 0
-        step: 14
-        pixels-scroll: true
-
-    VerticalSeparator
-      id: separator1
-      anchors.top: friendTitle.bottom
-      anchors.horizontalCenter: parent.horizontalCenter
-      anchors.bottom: parent.bottom
-      margin-top: 5
-      margin-bottom: 5
-
-    Panel
-      id: secondPanel
-      anchors.top: friendTitle.bottom
-      anchors.left: prev.right
       anchors.right: parent.right
       anchors.bottom: parent.bottom
-      margin: 5 5 5 5
+      margin: 3 8 5 8
+
       Label
+        id: headerVoc
         anchors.top: parent.top
         anchors.left: parent.left
-        !text: tr('Heal Friend List')
-        font: $var-cip-font
-        color: $var-text-cip-color
+        margin-top: 2
+        !text: tr('Vocation')
+        font: $var-main-font
+        color: #888888
         text-auto-resize: true
-      UICreature
-        id: friendButton0
-        size: 34 34
-        anchors.top: prev.bottom
+      Label
+        id: headerHp
+        anchors.top: parent.top
         anchors.left: parent.left
-        margin-top: 7
-        margin-left: 2
-        image-source: /images/store/bazaar-add-item
-        image-clip: 0 0 34 34
-        idle-animate: true
-        $pressed:
-          image-clip: 34 0 34 34
-        $hover !pressed:
-          image-clip: 0 0 34 34
-        @onClick: modules.game_helper.onAddPartyMember(self)
-      CheckBox
-        id: enableSio0
-        width: 100
-        anchors.top: prev.top
-        anchors.left: friendButton0.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        @onCheckChange: modules.game_helper.onEnableSio(self, self:isChecked())
-        $hover !disabled:
-          color: #c0c0c0
-      ComboBox
-        id: healPercent0
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: friendButton0.right
         margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateFriendHealingPercent(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          for i = 10, 100, 10 do
-            if i == 100 then
-              i = 99
-            end
-            self:addOption(i .. "%")
-          end
-          self:setCurrentOption("99%")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('')
-      UICreature
-        id: friendButton1
-        size: 34 34
-        anchors.top: friendButton0.bottom
+        margin-left: 120
+        !text: tr('HP%%')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
+      Label
+        id: headerPrio
+        anchors.top: parent.top
         anchors.left: parent.left
-        margin-top: 5
-        margin-left: 2
-        image-source: /images/store/bazaar-add-item
-        image-clip: 0 0 34 34
-        $pressed:
-          image-clip: 34 0 34 34
-        $hover !pressed:
-          image-clip: 0 0 34 34
-        @onClick: modules.game_helper.onAddPartyMember(self)
-      CheckBox
-        id: enableSio1
-        width: 100
-        anchors.top: prev.top
-        anchors.left: friendButton1.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        @onCheckChange: modules.game_helper.onEnableSio(self, self:isChecked())
-        $hover !disabled:
-        color: #c0c0c0
+        margin-top: 2
+        margin-left: 200
+        !text: tr('Priority')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
 
+      CheckBox
+        id: enableFriendKnight
+        width: 110
+        anchors.top: headerVoc.bottom
+        anchors.left: parent.left
+        margin-top: 8
+        !text: tr('Knight')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocFriend('knight', self:isChecked())
       ComboBox
-        id: healPercent1
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: friendButton1.right
-        margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateFriendHealingPercent(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
+        id: friendPercentKnight
+        size: 55 18
+        anchors.top: enableFriendKnight.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPercent('knight', self:getCurrentOption().text:match("%d+"))
         @onSetup: |
           for i = 10, 100, 10 do
-            if i == 100 then
-              i = 99
-            end
+            if i == 100 then i = 99 end
             self:addOption(i .. "%")
           end
-          self:setCurrentOption("99%")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('')
+          self:setCurrentOption("90%")
+      ComboBox
+        id: friendPriorityKnight
+        size: 45 18
+        anchors.top: enableFriendKnight.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPriority('knight', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("5")
+
+      CheckBox
+        id: enableFriendPaladin
+        width: 110
+        anchors.top: enableFriendKnight.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Paladin')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocFriend('paladin', self:isChecked())
+      ComboBox
+        id: friendPercentPaladin
+        size: 55 18
+        anchors.top: enableFriendPaladin.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPercent('paladin', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: friendPriorityPaladin
+        size: 45 18
+        anchors.top: enableFriendPaladin.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPriority('paladin', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("4")
+
+      CheckBox
+        id: enableFriendSorcerer
+        width: 110
+        anchors.top: enableFriendPaladin.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Sorcerer')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocFriend('sorcerer', self:isChecked())
+      ComboBox
+        id: friendPercentSorcerer
+        size: 55 18
+        anchors.top: enableFriendSorcerer.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPercent('sorcerer', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: friendPrioritySorcerer
+        size: 45 18
+        anchors.top: enableFriendSorcerer.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPriority('sorcerer', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("3")
+
+      CheckBox
+        id: enableFriendDruid
+        width: 110
+        anchors.top: enableFriendSorcerer.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Druid')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocFriend('druid', self:isChecked())
+      ComboBox
+        id: friendPercentDruid
+        size: 55 18
+        anchors.top: enableFriendDruid.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPercent('druid', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: friendPriorityDruid
+        size: 45 18
+        anchors.top: enableFriendDruid.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPriority('druid', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("2")
+
+      CheckBox
+        id: enableFriendMonk
+        width: 110
+        anchors.top: enableFriendDruid.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Monk')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocFriend('monk', self:isChecked())
+      ComboBox
+        id: friendPercentMonk
+        size: 55 18
+        anchors.top: enableFriendMonk.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPercent('monk', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: friendPriorityMonk
+        size: 45 18
+        anchors.top: enableFriendMonk.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocFriendPriority('monk', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("1")
 
   Panel
     id: granSioPanel
-    height: 120
+    height: 145
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -971,1696 +1746,529 @@ HealingPanel < Panel
     enabled: true
     visible: false
     Label
-      id: friendTitle
+      id: granSioTitle
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       margin-top: 1
-      !text: tr('Exura Gran Sio Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
+      !text: tr("Nature's Embrace Helper")
+      font: $var-main-font
+      color: #AAAAAA
       text-auto-resize: true
     Panel
-      id: firstPanel
-      anchors.top: prev.bottom
+      id: vocGranSioPanel
+      anchors.top: granSioTitle.bottom
       anchors.left: parent.left
-      anchors.right: separator1.left
-      anchors.bottom: parent.bottom
-      margin: 5 5 5 5
-      focusable: true
-      Label
-        id: selectFriendLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        !text: tr('Select a Friend')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 2
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('You must be in a party to assign a player to be healed')
-      TextList
-        id: friendList2
-        height: 72
-        anchors.top: selectFriendLabel.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 7
-        padding: 1
-        focusable: true
-        vertical-scrollbar: friendListScrollBar
-        background-color: #484848
-      VerticalScrollBar
-        id: friendListScrollBar
-        anchors.top: prev.top
-        anchors.right: prev.right
-        anchors.bottom: prev.bottom
-        margin: 1 1 1 0
-        step: 14
-        pixels-scroll: true
-
-    VerticalSeparator
-      id: separator1
-      anchors.top: friendTitle.bottom
-      anchors.horizontalCenter: parent.horizontalCenter
-      anchors.bottom: parent.bottom
-      margin-top: 5
-      margin-bottom: 5
-
-    Panel
-      id: secondPanel2
-      anchors.top: friendTitle.bottom
-      anchors.left: prev.right
       anchors.right: parent.right
       anchors.bottom: parent.bottom
-      margin: 5 5 5 5
+      margin: 3 8 5 8
+
       Label
+        id: headerVoc
         anchors.top: parent.top
         anchors.left: parent.left
-        !text: tr('Heal Friend List')
-        font: $var-cip-font
-        color: $var-text-cip-color
+        margin-top: 2
+        !text: tr('Vocation')
+        font: $var-main-font
+        color: #888888
         text-auto-resize: true
-      UICreature
-        id: friendButton0
-        size: 34 34
-        anchors.top: prev.bottom
+      Label
+        id: headerHp
+        anchors.top: parent.top
         anchors.left: parent.left
-        margin-top: 7
-        margin-left: 2
-        image-source: /images/store/bazaar-add-item
-        image-clip: 0 0 34 34
-        idle-animate: true
-        $pressed:
-          image-clip: 34 0 34 34
-        $hover !pressed:
-          image-clip: 0 0 34 34
-        @onClick: modules.game_helper.onAddPartyGranSioMember(self)
-      CheckBox
-        id: enableSio0
-        width: 100
-        anchors.top: prev.top
-        anchors.left: friendButton0.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        @onCheckChange: modules.game_helper.onEnableGranSio(self, self:isChecked())
-        $hover !disabled:
-          color: #c0c0c0
-      ComboBox
-        id: healPercent0
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: friendButton0.right
         margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateGranSioPercent(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
+        margin-left: 120
+        !text: tr('HP%%')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
+      Label
+        id: headerPrio
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: 2
+        margin-left: 200
+        !text: tr('Priority')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
+
+      CheckBox
+        id: enableGranSioKnight
+        width: 110
+        anchors.top: headerVoc.bottom
+        anchors.left: parent.left
+        margin-top: 8
+        !text: tr('Knight')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocGranSio('knight', self:isChecked())
+      ComboBox
+        id: granSioPercentKnight
+        size: 55 18
+        anchors.top: enableGranSioKnight.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPercent('knight', self:getCurrentOption().text:match("%d+"))
         @onSetup: |
           for i = 10, 100, 10 do
-            if i == 100 then
-              i = 99
-            end
+            if i == 100 then i = 99 end
             self:addOption(i .. "%")
           end
-          self:setCurrentOption("99%")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('')
-      UICreature
-        id: friendButton1
-        size: 34 34
-        anchors.top: friendButton0.bottom
-        anchors.left: parent.left
-        margin-top: 5
-        margin-left: 2
-        image-source: /images/store/bazaar-add-item
-        image-clip: 0 0 34 34
-        $pressed:
-          image-clip: 34 0 34 34
-        $hover !pressed:
-          image-clip: 0 0 34 34
-        @onClick: modules.game_helper.onAddPartyGranSioMember(self)
-      CheckBox
-        id: enableSio1
-        width: 100
-        anchors.top: prev.top
-        anchors.left: friendButton1.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        @onCheckChange: modules.game_helper.onEnableGranSio(self, self:isChecked())
-        $hover !disabled:
-        color: #c0c0c0
-
+          self:setCurrentOption("90%")
       ComboBox
-        id: healPercent1
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: friendButton1.right
-        margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateGranSioPercent(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
+        id: granSioPriorityKnight
+        size: 45 18
+        anchors.top: enableGranSioKnight.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPriority('knight', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("5")
+
+      CheckBox
+        id: enableGranSioPaladin
+        width: 110
+        anchors.top: enableGranSioKnight.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Paladin')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocGranSio('paladin', self:isChecked())
+      ComboBox
+        id: granSioPercentPaladin
+        size: 55 18
+        anchors.top: enableGranSioPaladin.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPercent('paladin', self:getCurrentOption().text:match("%d+"))
         @onSetup: |
           for i = 10, 100, 10 do
-            if i == 100 then
-              i = 99
-            end
+            if i == 100 then i = 99 end
             self:addOption(i .. "%")
           end
-          self:setCurrentOption("99%")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('')
+          self:setCurrentOption("90%")
+      ComboBox
+        id: granSioPriorityPaladin
+        size: 45 18
+        anchors.top: enableGranSioPaladin.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPriority('paladin', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("4")
 
-ToolsPanel < Panel
-  anchors.fill: parent
+      CheckBox
+        id: enableGranSioSorcerer
+        width: 110
+        anchors.top: enableGranSioPaladin.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Sorcerer')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocGranSio('sorcerer', self:isChecked())
+      ComboBox
+        id: granSioPercentSorcerer
+        size: 55 18
+        anchors.top: enableGranSioSorcerer.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPercent('sorcerer', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: granSioPrioritySorcerer
+        size: 45 18
+        anchors.top: enableGranSioSorcerer.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPriority('sorcerer', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("3")
+
+      CheckBox
+        id: enableGranSioDruid
+        width: 110
+        anchors.top: enableGranSioSorcerer.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Druid')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocGranSio('druid', self:isChecked())
+      ComboBox
+        id: granSioPercentDruid
+        size: 55 18
+        anchors.top: enableGranSioDruid.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPercent('druid', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: granSioPriorityDruid
+        size: 45 18
+        anchors.top: enableGranSioDruid.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPriority('druid', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("2")
+
+      CheckBox
+        id: enableGranSioMonk
+        width: 110
+        anchors.top: enableGranSioDruid.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Monk')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocGranSio('monk', self:isChecked())
+      ComboBox
+        id: granSioPercentMonk
+        size: 55 18
+        anchors.top: enableGranSioMonk.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPercent('monk', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: granSioPriorityMonk
+        size: 45 18
+        anchors.top: enableGranSioMonk.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocGranSioPriority('monk', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("1")
+
   Panel
-    id: toolsPanel
-    height: 159
-    anchors.top: parent.top
+    id: masResPanel
+    height: 165
+    anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
+    margin-top: 7
     image-source: /images/ui/t2pixel-up-frame-borderimage
     image-border: 18
+    enabled: true
+    visible: false
     Label
-      id: toolsTitle
+      id: masResTitle
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       margin-top: 1
-      !text: tr('Tools Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
+      !text: tr('Mass Healing Helper')
+      font: $var-main-font
+      color: #AAAAAA
       text-auto-resize: true
     Panel
-      id: firstPanel
-      anchors.top: prev.bottom
+      id: vocMasResPanel
+      anchors.top: masResTitle.bottom
       anchors.left: parent.left
-      anchors.right: separator1.left
-      anchors.bottom: parent.bottom
-      margin: 5 5 5 5
-      Label
-        anchors.top: parent.top
-        anchors.left: parent.left
-        !text: tr('Mana Training')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      UIButton
-        id: spellTrainingButton0
-        size: 34 34
-        anchors.top: prev.bottom
-        anchors.left: parent.left
-        margin-top: 7
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      CheckBox
-        id: enableTraining0
-        width: 100
-        anchors.top: prev.top
-        anchors.left: spellTrainingButton0.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        $hover !disabled:
-          color: #c0c0c0
-        @onCheckChange: modules.game_helper.onEnableTraining(self:getId(), self:isChecked())
-
-      ComboBox
-        id: spellTrainingPercent0
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: spellTrainingButton0.right
-        margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        @onOptionChange: updateTrainingPercent('spellTrainingButton0', self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          for i = 10, 100, 10 do
-            self:addOption(i .. "%")
-          end
-          self:setCurrentOption("100%")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('Cast a spell when your mana reaches the defined percentage to avoid regeneration waste.')
-      HorizontalSeparator
-        id: separator
-        anchors.top: spellTrainingButton0.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 5
-      Label
-        id: toolsLabel
-        anchors.top: prev.bottom
-        anchors.left: parent.left
-        !text: tr('Exercise Training')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-        margin-top: 5
-      UIButton
-        id: autoTrainingItem
-        size: 34 34
-        anchors.top: toolsLabel.bottom
-        anchors.left: parent.left
-        margin-top: 7
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onHoverChange: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      CheckBox
-        id: autoTrainingCheck
-        width: 100
-        anchors.top: prev.top
-        anchors.left: autoTrainingItem.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        @onCheckChange: checkExerciseEvent()
-        change-cursor-image: false
-        $hover !disabled:
-        color: #c0c0c0
-      ComboBox
-        id: trainingBox
-        size: 67 20
-        anchors.top: prev.bottom
-        anchors.left: spellTrainingButton0.right
-        margin-top: 2
-        margin-left: 5
-        color: $var-text-cip-color
-        enabled: false
-        @onSetup: |
-          self:addOption("")
-          self:setCurrentOption("")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('Feature is being developed.')
-    VerticalSeparator
-      id: separator1
-      anchors.top: toolsTitle.bottom
-      anchors.horizontalCenter: parent.horizontalCenter
-      anchors.bottom: parent.bottom
-      margin-top: 5
-      margin-bottom: 5
-    Panel
-      id: secondPanel
-      anchors.top: toolsTitle.bottom
-      anchors.left: prev.right
       anchors.right: parent.right
       anchors.bottom: parent.bottom
-      margin: 5 5 5 5
+      margin: 3 8 5 8
+
       Label
+        id: headerVoc
         anchors.top: parent.top
         anchors.left: parent.left
-        !text: tr('Auto Haste')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      UIButton
-        id: hasteButton0
-        size: 34 34
-        anchors.top: prev.bottom
-        anchors.left: parent.left
-        margin-top: 7
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      CheckBox
-        id: enableHaste0
-        width: 100
-        anchors.top: prev.top
-        anchors.left: hasteButton0.right
-        !text: tr('Enable')
-        margin-left: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        @onCheckChange: toggleAutoHaste(self:isChecked())
-        change-cursor-image: false
-        $hover !disabled:
-        color: #c0c0c0
-      CheckBox
-        id: castOnPz
-        width: 100
-        anchors.top: prev.bottom
-        anchors.left: hasteButton0.right
-        !text: tr('PZ Cast')
-        margin-left: 5
-        margin-top: 5
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        @onCheckChange: toggleAutoHastePz(self:isChecked())
-        change-cursor-image: false
-        $hover !disabled:
-        color: #c0c0c0
-      HorizontalSeparator
-        id: separator
-        anchors.top: hasteButton0.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 5
-      Label
-        id: toolsLabel2
-        anchors.top: prev.bottom
-        anchors.left: parent.left
-        !text: tr('Others Tools')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-        margin-top: 5
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
         margin-top: 2
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('Some other useful tools to make your gameplay easier.')
-      CheckBox
-        id: changeGold
-        width: 110
-        anchors.top: toolsLabel2.bottom
+        !text: tr('Vocation')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
+      Label
+        id: headerHp
+        anchors.top: parent.top
         anchors.left: parent.left
-        !text: tr('Change Gold')
-        margin-top: 7
-        margin-left: 2
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        change-cursor-image: false
-        @onCheckChange: modules.game_helper.toogleChangeGold(self:isChecked())
-        $hover !disabled:
-          color: #c0c0c0
-        !tooltip: tr('The gold exchange will only work if the gold container is open.')
+        margin-top: 2
+        margin-left: 120
+        !text: tr('HP%%')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
+      Label
+        id: headerPrio
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: 2
+        margin-left: 200
+        !text: tr('Priority')
+        font: $var-main-font
+        color: #888888
+        text-auto-resize: true
 
       CheckBox
-        id: eatFood
+        id: enableMasResKnight
         width: 110
-        anchors.top: prev.bottom
+        anchors.top: headerVoc.bottom
         anchors.left: parent.left
-        !text: tr('Auto Eat Food')
-        margin-top: 7
-        margin-left: 2
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        @onCheckChange: toggleAutoEat(self:isChecked())
+        margin-top: 8
+        !text: tr('Knight')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
         change-cursor-image: false
-        $hover !disabled:
-          color: #c0c0c0
+        @onCheckChange: modules.game_helper.onEnableVocMasRes('knight', self:isChecked())
+      ComboBox
+        id: masResPercentKnight
+        size: 55 18
+        anchors.top: enableMasResKnight.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPercent('knight', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: masResPriorityKnight
+        size: 45 18
+        anchors.top: enableMasResKnight.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPriority('knight', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("5")
+
       CheckBox
-        id: reconnect
+        id: enableMasResPaladin
         width: 110
-        anchors.top: prev.bottom
+        anchors.top: enableMasResKnight.bottom
         anchors.left: parent.left
-        !text: tr('Auto Reconnect')
-        margin-top: 7
-        margin-left: 2
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-offset: 13 -3
-        text-auto-resize: true
-        @onCheckChange: toggleReconnect(self:isChecked())
+        margin-top: 9
+        !text: tr('Paladin')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
         change-cursor-image: false
-        $hover !disabled:
-          color: #c0c0c0
+        @onCheckChange: modules.game_helper.onEnableVocMasRes('paladin', self:isChecked())
+      ComboBox
+        id: masResPercentPaladin
+        size: 55 18
+        anchors.top: enableMasResPaladin.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPercent('paladin', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: masResPriorityPaladin
+        size: 45 18
+        anchors.top: enableMasResPaladin.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPriority('paladin', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("4")
+
+      CheckBox
+        id: enableMasResSorcerer
+        width: 110
+        anchors.top: enableMasResPaladin.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Sorcerer')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocMasRes('sorcerer', self:isChecked())
+      ComboBox
+        id: masResPercentSorcerer
+        size: 55 18
+        anchors.top: enableMasResSorcerer.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPercent('sorcerer', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: masResPrioritySorcerer
+        size: 45 18
+        anchors.top: enableMasResSorcerer.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPriority('sorcerer', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("3")
+
+      CheckBox
+        id: enableMasResDruid
+        width: 110
+        anchors.top: enableMasResSorcerer.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Druid')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocMasRes('druid', self:isChecked())
+      ComboBox
+        id: masResPercentDruid
+        size: 55 18
+        anchors.top: enableMasResDruid.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPercent('druid', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: masResPriorityDruid
+        size: 45 18
+        anchors.top: enableMasResDruid.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPriority('druid', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("2")
+
+      CheckBox
+        id: enableMasResMonk
+        width: 110
+        anchors.top: enableMasResDruid.bottom
+        anchors.left: parent.left
+        margin-top: 9
+        !text: tr('Monk')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        @onCheckChange: modules.game_helper.onEnableVocMasRes('monk', self:isChecked())
+      ComboBox
+        id: masResPercentMonk
+        size: 55 18
+        anchors.top: enableMasResMonk.top
+        anchors.left: parent.left
+        margin-left: 120
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPercent('monk', self:getCurrentOption().text:match("%d+"))
+        @onSetup: |
+          for i = 10, 100, 10 do
+            if i == 100 then i = 99 end
+            self:addOption(i .. "%")
+          end
+          self:setCurrentOption("90%")
+      ComboBox
+        id: masResPriorityMonk
+        size: 45 18
+        anchors.top: enableMasResMonk.top
+        anchors.left: parent.left
+        margin-left: 200
+        color: $var-text-color
+        font: $var-main-font
+        @onOptionChange: modules.game_helper.updateVocMasResPriority('monk', self:getCurrentOption().text)
+        @onSetup: |
+          for i = 1, 5 do self:addOption(tostring(i)) end
+          self:setCurrentOption("1")
+
+      CheckBox
+        id: masResExtended
+        width: 200
+        anchors.top: enableMasResMonk.bottom
+        anchors.left: parent.left
+        margin-top: 12
+        !text: tr('Extended Area (4x4)')
+        font: $var-main-font
+        color: $var-text-color
+        text-offset: 13 0
+        change-cursor-image: false
+        !tooltip: tr('Enable if your spell has an enlarged area (4x4 instead of 3x3)')
+        @onCheckChange: modules.game_helper.onMasResExtendedChange(self:isChecked())
+
+// ToolsPanel is now defined in styles/tools_panel.otui
 
 ShooterPanel < Panel
   anchors.fill: parent
-  Panel
-    id: presetsPanel
-    height: 52
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-    image-source: /images/ui/2pixel-up-frame-borderimage
-    image-border: 10
-    padding: 3
-    Label
-      id: presetsLabel
-      anchors.top: parent.top
-      anchors.left: parent.left
-      margin-left: 2
-      margin-top: 3
-      !text: tr('Presets:')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-    ComboBox
-      id: presets
-      size: 90 20
-      anchors.top: prev.bottom
-      anchors.left: prev.left
-      margin-top: 7
-      color: $var-text-cip-color
-      text-offset: -20 0
-      @onOptionChange: toggleShooterPreset(self)
-    UIButton
-      id: rmvPresetButton
-      size: 25 20
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 5
-      image-source: /images/ui/rmv-button
-      image-clip: 0 0 25 20
-      !tooltip: tr('Remove Preset')
-      $hover !pressed:
-        image-clip: 0 0 25 20
-      $pressed:
-        image-clip: 0 20 25 20
-      @onClick: removeProfile()
-    Button
-      id: setKeyPresetButton
-      size: 41 15
-      anchors.top: presetsLabel.top
-      anchors.left: presetsLabel.right
-      !text: tr('Set Key')
-      margin-left: 5
-      @onClick: manageHotkeys("Change Shooter Preset")
-    UIWidget
-      size: 12 12
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 10
-      margin-top: 1
-      image-source: /images/skin/show-gui-help-grey
-      !tooltip: tr('Choose a hotkey to switch the preset.')
-    VerticalSeparator
-      id: sep1
-      anchors.top: prev.top
-      anchors.left: prev.right
-      anchors.bottom: parent.bottom
-      margin-left: 8
-      margin-bottom: 5
-    Button
-      id: renameButton
-      size: 120 20
-      anchors.top: parent.top
-      anchors.right: parent.right
-      !text: tr('Rename Preset')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      margin-top: 2
-      margin-right: 5
-      !tooltip: tr('Rename the current preset.')
-      @onClick: sendRenameOrAddWindow(true)
-    Button
-      id: saveButton
-      size: 120 20
-      anchors.top: presets.top
-      anchors.right: parent.right
-      !text: tr('New Preset')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      image-source: /images/ui/buttons-blue
-      margin-right: 5
-      !tooltip: tr('Create a new preset.')
-      @onClick: sendRenameOrAddWindow(false)
 
-  Panel
-    id: spellPanel
-    height: 163
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 5
-    image-source: /images/ui/t2pixel-up-frame-borderimage
-    image-border: 18
-    Label
-      id: toolsTitle
-      anchors.top: parent.top
-      anchors.horizontalCenter: parent.horizontalCenter
-      margin-top: 1
-      !text: tr('Spell Shooter Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
-      text-auto-resize: true
-    Panel
-      id: firstPanel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.bottom: parent.bottom
-      margin: 5 5 5 5
-      Label
-        id: spellLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        !text: tr('Spell')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      VerticalSeparator
-        id: sep0
-        anchors.top: prev.top
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-        margin-left: 15
-        margin-bottom: 5
-      Label
-        id: manaPercentLabel
-        anchors.top: parent.top
-        anchors.left: prev.right
-        margin-left: 7
-        !text: tr('Mana %%')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      VerticalSeparator
-        id: sep1
-        anchors.top: prev.top
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-        margin-left: 13
-        margin-bottom: 5
-      Label
-        id: creaturesLabel
-        anchors.top: parent.top
-        anchors.left: prev.right
-        margin-left: 7
-        !text: tr('Creatures')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      VerticalSeparator
-        id: sep2
-        anchors.top: prev.top
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-        margin-left: 5
-        margin-bottom: 5
-      Label
-        id: priorityLabel
-        anchors.top: parent.top
-        anchors.left: sep2.right
-        margin-left: 5
-        !text: tr('Priority')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-
-      UIButton
-        id: attackSpellButton0
-        size: 34 34
-        anchors.top: parent.top
-        anchors.left: parent.left
-        margin-top: 20
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      UIButton
-        id: rmvPercentButton0
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: sep0.right
-        margin-left: 4
-        margin-top: 10
-        image-source: /images/ui/percent-buttons
-        image-clip: 0 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 0 0 10 24
-        $pressed:
-          image-clip: 0 24 10 24
-        $disabled:
-          image-clip: 0 48 10 24
-      FlatPanel
-        id: spellPercentBg0
-        size: 35 24
-        image-source: /images/ui/percentBg
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        !tooltip: tr('Mana Percent')
-        Label
-          id: spellPercentLabel0
-          anchors.top: parent.top
-          anchors.horizontalCenter: parent.horizontalCenter
-          margin-top: 4
-          !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
-          text-auto-resize: true
-          phantom: true
-      UIButton
-        id: addPercentButton0
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        image-source: /images/ui/percent-buttons
-        image-clip: 10 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 10 0 10 24
-        $pressed:
-          image-clip: 10 24 10 24
-        $disabled:
-          image-clip: 10 48 10 24
-      ComboBox
-        id: countMinCreature0
-        size: 50 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 18
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1+")
-          self:addOption("2+")
-          self:addOption("3+")
-          self:addOption("4+")
-          self:addOption("5+")
-          self:addOption("6+")
-          self:addOption("7+")
-          self:addOption("8+")
-          self:addOption("9+")
-          self:addOption("10+")
-          self:setCurrentOption("1+")
-      CheckBox
-        id: conditionSetting0
-        width: 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 7
-        change-cursor-image: false
-        !tooltip: tr('Cast if have +1 creatures')
-        visible: false
-        @onCheckChange: toggleForceCast(self:getId():match("%d+"), self:isChecked())
-      ComboBox
-        id: priority0
-        size: 53 24
-        anchors.top: countMinCreature0.top
-        anchors.left: prev.right
-        margin-left: 14
-        font: Icon-VBold-11px
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1st")
-          self:addOption("2nd")
-          self:addOption("3rd")
-          self:addOption("4th")
-          self:addOption("5th")
-          self:addOption("6th")
-          self:addOption("7th")
-          self:setCurrentOption("1st")
-
-      UIButton
-        id: attackSpellButton1
-        size: 34 34
-        anchors.top: attackSpellButton0.bottom
-        anchors.left: parent.left
-        margin-top: 8
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      UIButton
-        id: rmvPercentButton1
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: sep0.right
-        margin-left: 4
-        margin-top: 6
-        image-source: /images/ui/percent-buttons
-        image-clip: 0 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 0 0 10 24
-        $pressed:
-          image-clip: 0 24 10 24
-        $disabled:
-          image-clip: 0 48 10 24
-      FlatPanel
-        id: spellPercentBg1
-        size: 35 24
-        image-source: /images/ui/percentBg
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        !tooltip: tr('Mana Percent')
-        Label
-          id: spellPercentLabel1
-          anchors.top: parent.top
-          anchors.horizontalCenter: parent.horizontalCenter
-          margin-top: 4
-          !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
-          text-auto-resize: true
-          phantom: true
-      UIButton
-        id: addPercentButton1
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        image-source: /images/ui/percent-buttons
-        image-clip: 10 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 10 0 10 24
-        $pressed:
-          image-clip: 10 24 10 24
-        $disabled:
-          image-clip: 10 48 10 24
-      ComboBox
-        id: countMinCreature1
-        size: 50 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 18
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1+")
-          self:addOption("2+")
-          self:addOption("3+")
-          self:addOption("4+")
-          self:addOption("5+")
-          self:addOption("6+")
-          self:addOption("7+")
-          self:addOption("8+")
-          self:addOption("9+")
-          self:addOption("10+")
-          self:setCurrentOption("1+")
-      CheckBox
-        id: conditionSetting1
-        width: 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 7
-        change-cursor-image: false
-        !tooltip: tr('Cast if have +1 creatures')
-        visible: false
-        @onCheckChange: toggleForceCast(self:getId():match("%d+"), self:isChecked())
-      ComboBox
-        id: priority1
-        size: 53 24
-        anchors.top: countMinCreature1.top
-        anchors.left: prev.right
-        margin-left: 14
-        font: Icon-VBold-11px
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1st")
-          self:addOption("2nd")
-          self:addOption("3rd")
-          self:addOption("4th")
-          self:addOption("5th")
-          self:addOption("6th")
-          self:addOption("7th")
-          self:setCurrentOption("1st")
-
-      UIButton
-        id: attackSpellButton2
-        size: 34 34
-        anchors.top: attackSpellButton1.bottom
-        anchors.left: parent.left
-        margin-top: 8
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      UIButton
-        id: rmvPercentButton2
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: sep0.right
-        margin-left: 4
-        margin-top: 6
-        image-source: /images/ui/percent-buttons
-        image-clip: 0 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 0 0 10 24
-        $pressed:
-          image-clip: 0 24 10 24
-        $disabled:
-          image-clip: 0 48 10 24
-      FlatPanel
-        id: spellPercentBg2
-        size: 35 24
-        image-source: /images/ui/percentBg
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        !tooltip: tr('Mana Percent')
-        Label
-          id: spellPercentLabel2
-          anchors.top: parent.top
-          anchors.horizontalCenter: parent.horizontalCenter
-          margin-top: 4
-          !text: tr('80%%')
-          font: $var-cip-font
-          color: $var-text-cip-color
-          text-auto-resize: true
-          phantom: true
-      UIButton
-        id: addPercentButton2
-        size: 10 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 2
-        image-source: /images/ui/percent-buttons
-        image-clip: 10 0 10 24
-        @onSetup: |
-          g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-        $hover !pressed:
-          image-clip: 10 0 10 24
-        $pressed:
-          image-clip: 10 24 10 24
-        $disabled:
-          image-clip: 10 48 10 24
-      ComboBox
-        id: countMinCreature2
-        size: 50 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 18
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1+")
-          self:addOption("2+")
-          self:addOption("3+")
-          self:addOption("4+")
-          self:addOption("5+")
-          self:addOption("6+")
-          self:addOption("7+")
-          self:addOption("8+")
-          self:addOption("9+")
-          self:addOption("10+")
-          self:setCurrentOption("1+")
-      CheckBox
-        id: conditionSetting2
-        width: 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 7
-        change-cursor-image: false
-        !tooltip: tr('Cast if have +1 creatures')
-        visible: false
-        @onCheckChange: toggleForceCast(self:getId():match("%d+"), self:isChecked())
-      ComboBox
-        id: priority2
-        size: 53 24
-        anchors.top: countMinCreature2.top
-        anchors.left: prev.right
-        margin-left: 14
-        font: Icon-VBold-11px
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateMagicShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1st")
-          self:addOption("2nd")
-          self:addOption("3rd")
-          self:addOption("4th")
-          self:addOption("5th")
-          self:addOption("6th")
-          self:addOption("7th")
-          self:setCurrentOption("1st")
-
-      Panel
-        id: attackSpellPanel3
-        height: 34
-        anchors.top: attackSpellButton2.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 8
-        UIButton
-          id: attackSpellButton3
-          size: 34 34
-          anchors.top: parent.top
-          anchors.left: parent.left
-          margin-left: 2
-          image-source: /images/game/actionbar/actionbarslot
-          @onClick: updateButton(self)
-          @onMouseRelease: updateButton(self)
-        UIButton
-          id: rmvPercentButton3
-          size: 10 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 16
-          margin-top: 3
-          image-source: /images/ui/percent-buttons
-          image-clip: 0 0 10 24
-          @onSetup: |
-            g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-          $hover !pressed:
-            image-clip: 0 0 10 24
-          $pressed:
-            image-clip: 0 24 10 24
-          $disabled:
-            image-clip: 0 48 10 24
-        FlatPanel
-          id: spellPercentBg3
-          size: 35 24
-          image-source: /images/ui/percentBg
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 2
-          !tooltip: tr('Mana Percent')
-          Label
-            id: spellPercentLabel3
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            margin-top: 4
-            !text: tr('80%%')
-            font: $var-cip-font
-            color: $var-text-cip-color
-            text-auto-resize: true
-            phantom: true
-        UIButton
-          id: addPercentButton3
-          size: 10 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 2
-          image-source: /images/ui/percent-buttons
-          image-clip: 10 0 10 24
-          @onSetup: |
-            g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-          $hover !pressed:
-            image-clip: 10 0 10 24
-          $pressed:
-            image-clip: 10 24 10 24
-          $disabled:
-            image-clip: 10 48 10 24
-        ComboBox
-          id: countMinCreature3
-          size: 50 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 18
-          color: $var-text-cip-color
-          @onOptionChange: modules.game_helper.updateMagicShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-          @onSetup: |
-            self:addOption("1+")
-            self:addOption("2+")
-            self:addOption("3+")
-            self:addOption("4+")
-            self:addOption("5+")
-            self:addOption("6+")
-            self:addOption("7+")
-            self:addOption("8+")
-            self:addOption("9+")
-            self:addOption("10+")
-            self:setCurrentOption("1+")
-        CheckBox
-          id: conditionSetting3
-          width: 12
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 5
-          margin-top: 7
-          change-cursor-image: false
-          !tooltip: tr('Cast if have +1 creatures')
-          visible: false
-          @onCheckChange: toggleForceCast(self:getId():match("%d+"), self:isChecked())
-        ComboBox
-          id: priority3
-          size: 53 24
-          anchors.top: countMinCreature3.top
-          anchors.left: prev.right
-          margin-left: 14
-          font: Icon-VBold-11px
-          color: $var-text-cip-color
-          @onOptionChange: modules.game_helper.updateMagicShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-          @onSetup: |
-            self:addOption("1st")
-            self:addOption("2nd")
-            self:addOption("3rd")
-            self:addOption("4th")
-            self:addOption("5th")
-            self:addOption("6th")
-            self:addOption("7th")
-            self:setCurrentOption("1st")
-      
-      Panel
-        id: attackSpellPanel4
-        height: 34
-        anchors.top: prev.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        margin-top: 8
-        UIButton
-          id: attackSpellButton4
-          size: 34 34
-          anchors.top: parent.top
-          anchors.left: parent.left
-          margin-left: 2
-          image-source: /images/game/actionbar/actionbarslot
-          @onClick: updateButton(self)
-          @onMouseRelease: updateButton(self)
-        UIButton
-          id: rmvPercentButton4
-          size: 10 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 16
-          margin-top: 3
-          image-source: /images/ui/percent-buttons
-          image-clip: 0 0 10 24
-          @onSetup: |
-            g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-          $hover !pressed:
-            image-clip: 0 0 10 24
-          $pressed:
-            image-clip: 0 24 10 24
-          $disabled:
-            image-clip: 0 48 10 24
-        FlatPanel
-          id: spellPercentBg4
-          size: 35 24
-          image-source: /images/ui/percentBg
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 2
-          !tooltip: tr('Mana Percent')
-          Label
-            id: spellPercentLabel4
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            margin-top: 4
-            !text: tr('80%%')
-            font: $var-cip-font
-            color: $var-text-cip-color
-            text-auto-resize: true
-            phantom: true
-        UIButton
-          id: addPercentButton4
-          size: 10 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 2
-          image-source: /images/ui/percent-buttons
-          image-clip: 10 0 10 24
-          @onSetup: |
-            g_mouse.bindAutoPress(self, function() updateMagicShooterPercent(self:getId()) end, 150)
-          $hover !pressed:
-            image-clip: 10 0 10 24
-          $pressed:
-            image-clip: 10 24 10 24
-          $disabled:
-            image-clip: 10 48 10 24
-        ComboBox
-          id: countMinCreature4
-          size: 50 24
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 18
-          color: $var-text-cip-color
-          @onOptionChange: modules.game_helper.updateMagicShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-          @onSetup: |
-            self:addOption("1+")
-            self:addOption("2+")
-            self:addOption("3+")
-            self:addOption("4+")
-            self:addOption("5+")
-            self:addOption("6+")
-            self:addOption("7+")
-            self:addOption("8+")
-            self:addOption("9+")
-            self:addOption("10+")
-            self:setCurrentOption("1+")
-        CheckBox
-          id: conditionSetting4
-          width: 12
-          anchors.top: prev.top
-          anchors.left: prev.right
-          margin-left: 5
-          margin-top: 7
-          change-cursor-image: false
-          !tooltip: tr('Cast if have +1 creatures')
-          visible: false
-          @onCheckChange: toggleForceCast(self:getId():match("%d+"), self:isChecked())
-        ComboBox
-          id: priority4
-          size: 53 24
-          anchors.top: countMinCreature4.top
-          anchors.left: prev.right
-          margin-left: 14
-          font: Icon-VBold-11px
-          color: $var-text-cip-color
-          @onOptionChange: modules.game_helper.updateMagicShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-          @onSetup: |
-            self:addOption("1st")
-            self:addOption("2nd")
-            self:addOption("3rd")
-            self:addOption("4th")
-            self:addOption("5th")
-            self:addOption("6th")
-            self:addOption("7th")
-            self:setCurrentOption("1st")
-
-  Panel
-    id: runePanel
-    height: 125
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 5
-    image-source: /images/ui/t2pixel-up-frame-borderimage
-    image-border: 18
-    Label
-      id: runeTitle
-      anchors.top: parent.top
-      anchors.horizontalCenter: parent.horizontalCenter
-      margin-top: 1
-      !text: tr('Rune Shooter Helper')
-      font: $var-cip-font
-      color: $var-text-cip-color-grey
-      text-auto-resize: true
-    Panel
-      id: firstPanel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.bottom: parent.bottom
-      margin: 5 5 5 5
-      Label
-        id: runeLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        !text: tr('Rune')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      VerticalSeparator
-        id: sep0
-        anchors.top: prev.top
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-        margin-left: 15
-        margin-bottom: 5
-      Label
-        id: creaturesLabel
-        anchors.top: parent.top
-        anchors.left: prev.right
-        margin-left: 7
-        !text: tr('Creatures')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      VerticalSeparator
-        id: sep1
-        anchors.top: prev.top
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-        margin-left: 5
-        margin-bottom: 5
-      Label
-        id: priorityLabel
-        anchors.top: parent.top
-        anchors.left: sep1.right
-        margin-left: 7
-        !text: tr('Priority')
-        font: $var-cip-font
-        color: $var-text-cip-color
-        text-auto-resize: true
-      UIButton
-        id: runeShooterButton0
-        size: 34 34
-        anchors.top: parent.top
-        anchors.left: parent.left
-        margin-top: 20
-        margin-left: 2
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      ComboBox
-        id: countMinCreature0
-        size: 50 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 19
-        margin-top: 3
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateRuneShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1+")
-          self:addOption("2+")
-          self:addOption("3+")
-          self:addOption("4+")
-          self:addOption("5+")
-          self:addOption("6+")
-          self:addOption("7+")
-          self:addOption("8+")
-          self:addOption("9+")
-          self:addOption("10+")
-          self:setCurrentOption("1+")
-      CheckBox
-        id: conditionSetting0
-        width: 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 7
-        change-cursor-image: false
-        !tooltip: tr('Cast if have +1 creatures')
-        visible: false
-        @onCheckChange: toggleForceRuneCast(self:getId():match("%d+"), self:isChecked())
-      ComboBox
-        id: runePriority0
-        size: 55 24
-        anchors.top: countMinCreature0.top
-        anchors.left: prev.right
-        margin-left: 17
-        font: Icon-VBold-11px
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateRuneShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1st")
-          self:addOption("2nd")
-          self:addOption("3rd")
-          self:addOption("4th")
-          self:addOption("5th")
-          self:addOption("6th")
-          self:addOption("7th")
-          self:setCurrentOption("1st")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 10
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('Select an attack rune to be used on monsters or targets.\nIf the rune is single target, it will be used on individual enemies.\nFor area runes, the system will choose the best target\nto hit the maximum number of creatures.')
-
-      UIButton
-        id: runeShooterButton1
-        size: 34 34
-        anchors.top: runeShooterButton0.bottom
-        anchors.left: runeShooterButton0.left
-        margin-top: 10
-        image-source: /images/game/actionbar/actionbarslot
-        @onClick: updateButton(self)
-        @onMouseRelease: updateButton(self)
-      ComboBox
-        id: countMinCreature1
-        size: 50 24
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 19
-        margin-top: 3
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateRuneShooterCreatures(self:getId(), self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1+")
-          self:addOption("2+")
-          self:addOption("3+")
-          self:addOption("4+")
-          self:addOption("5+")
-          self:addOption("6+")
-          self:addOption("7+")
-          self:addOption("8+")
-          self:addOption("9+")
-          self:addOption("10+")
-          self:setCurrentOption("1+")
-      CheckBox
-        id: conditionSetting1
-        width: 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 5
-        margin-top: 7
-        change-cursor-image: false
-        !tooltip: tr('Cast if have +1 creatures')
-        visible: false
-        @onCheckChange: toggleForceRuneCast(self:getId():match("%d+"), self:isChecked())
-      ComboBox
-        id: runePriority1
-        size: 55 24
-        anchors.top: countMinCreature1.top
-        anchors.left: prev.right
-        margin-left: 17
-        font: Icon-VBold-11px
-        color: $var-text-cip-color
-        @onOptionChange: modules.game_helper.updateRuneShooterPriority(self:getId():match("%d+"), self:getCurrentOption().text:match("%d+"))
-        @onSetup: |
-          self:addOption("1st")
-          self:addOption("2nd")
-          self:addOption("3rd")
-          self:addOption("4th")
-          self:addOption("5th")
-          self:addOption("6th")
-          self:addOption("7th")
-          self:setCurrentOption("1st")
-      UIWidget
-        size: 12 12
-        anchors.top: prev.top
-        anchors.left: prev.right
-        margin-left: 10
-        margin-top: 4
-        image-source: /images/skin/show-gui-help-grey
-        !tooltip: tr('Select an attack rune to be used on monsters or targets.\nIf the rune is single target, it will be used on individual enemies.\nFor area runes, the system will choose the best target\nto hit the maximum number of creatures.')
-  Panel
-    id: enableButtons
-    height: 65
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    image-source: /images/ui/2pixel-up-frame-borderimage
-    image-border: 10
-    padding: 3
-    CheckBox
-      id: enableAutoTarget
-      width: 90
-      anchors.top: parent.top
-      anchors.left: parent.left
-      !text: tr('Auto Target')
-      margin-left: 2
-      margin-top: 7
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-offset: 13 -3
-      @onCheckChange: toggleAutoTarget(self)
-      change-cursor-image: false
-      $hover !disabled:
-      color: #c0c0c0
-    ComboBox
-      id: autoTargetMode
-      size: 50 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 7
-      margin-top: -1
-      color: $var-text-cip-color
-      text-offset: -20 0
-      @onOptionChange: modules.game_helper.updateAutoTargetMode(self:getCurrentOption().text)
-      @onSetup: |
-        self:addOption("A")
-        self:addOption("B")
-        self:addOption("C")
-        self:addOption("D")
-        self:addOption("E")
-        self:addOption("F")
-        self:addOption("G")
-        self:addOption("H")
-        self:addOption("I")
-        self:setCurrentOption("A")
-    UIWidget
-      size: 12 12
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 10
-      margin-top: 1
-      image-source: /images/skin/show-gui-help-grey
-      !tooltip: tr('Mode A = Prioritizes the closest target\nMode B = Prioritizes the farthest target\nMode C = Prioritizes target with the lowest health\nMode D = Prioritizes target with the highest health\nMode E = Prioritizes the best target to throw runes (diamond arrows for paladins)\nMode F = Attacks the closest target, prioritizing the one with the lowest health\nMode G = Prioritizes the closest target with the highest health\nMode H = Prioritizes the farthest target with the lowest health\nMode I = Prioritizes the farthest target with the highest health')
-    Button
-      id: setKeyAutoTargetButton
-      size: 43 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('Set Key')
-      margin-left: 20
-      margin-top: -2
-      @onClick: manageHotkeys("Enable/Disable Auto Target")
-    UIWidget
-      size: 12 12
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 10
-      margin-top: 1
-      image-source: /images/skin/show-gui-help-grey
-      !tooltip: tr('Choose a hotkey to toggle auto target on/off.')
-    CheckBox
-      id: enableMagicShooter
-      width: 160
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      !text: tr('Enable Shooter Helper')
-      margin-left: 2
-      margin-top: 8
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-offset: 13 -3
-      @onCheckChange: toggleMagicShooter(self)
-      change-cursor-image: false
-      $hover !disabled:
-      color: #c0c0c0
-    Button
-      id: setKeyMSButton
-      size: 43 15
-      anchors.top: prev.top
-      anchors.left: prev.right
-      !text: tr('Set Key')
-      margin-left: 27
-      margin-top: -2
-      @onClick: manageHotkeys("Enable/Disable Magic Shooter")
-    UIWidget
-      size: 12 12
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 10
-      margin-top: 1
-      image-source: /images/skin/show-gui-help-grey
-      !tooltip: tr('Choose a hotkey to toggle ATCaster on/off.')
-    Button
-      id: setKeyDisableButton
-      height: 15
-      anchors.top: setKeyMSButton.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-top: 5
-      margin-left: 2
-      margin-right: 32
-      image-source: /images/ui/buttons-blue
-      !text: tr('Set Key (Target/Shooter)')
-      color: $var-text-cip-color-white
-      @onClick: manageHotkeys("Enable/Disable Target and Magic Shooter")
-    UIWidget
-      size: 12 12
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 10
-      margin-top: 1
-      image-source: /images/skin/show-gui-help-grey
-      !tooltip: tr('Choose a hotkey to toggle ATCaster and Target on/off.')
-      
-NewHeadlessWindow
-  id: helperWindow
-  anchors.horizontalCenter: parent.horizontalCenter
-  size: 295 365
-  @onEscape: hide()
-  UIWidget
-    size: 145 56
-    anchors.top: parent.top
-    anchors.horizontalCenter: parent.horizontalCenter
-    margin-top: -33
-    image-source: /images/game/tutorial/backdrop_crestr
-    phantom: true
-
-  Panel
-    id: contentPanel
+  MagicShooterPanel
+    id: magicShooterPanelContainer
     anchors.fill: parent
-    margin: 15 13 17 13
-    Panel
-      id: optionsTabBar
-      height: 36
-      image-source: /images/game/destiny_wheel/menuBg
-      image-border: 1
-      anchors.top: parent.top
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-top: 12
-      Button
-        id: healingMenu
-        anchors.top: parent.top
-        anchors.left: parent.left
-        size: 34 34
-        margin-left: 1
-        margin-top: 1
-        image-source: /images/ui/helper
-        image-clip: 0 102 34 34
-        $hover !checked:
-          size: 34 34
-          image-clip: 0 102 34 34
-        $pressed:
-          size: 34 34
-          image-clip: 0 136 34 34
-        $checked:
-          size: 134 34
-          image-clip: 0 0 134 34
-        @onClick: loadMenu('healingMenu')
-      Button
-        id: toolsMenu
-        anchors.top: parent.top
-        anchors.left: prev.right
-        size: 34 34
-        margin-left: 1
-        margin-top: 1
-        image-source: /images/ui/helper
-        image-clip: 34 102 34 34
-        $hover !checked:
-          size: 34 34
-          image-clip: 34 102 34 34
-        $pressed:
-          size: 34 34
-          image-clip: 34 136 34 34
-        $checked:
-          size: 134 34
-          image-clip: 0 34 134 34
-        @onClick: loadMenu('toolsMenu')
-      Button
-        id: shooterMenu
-        anchors.top: parent.top
-        anchors.left: prev.right
-        size: 34 34
-        margin-left: 1
-        margin-top: 1
-        image-source: /images/ui/helper
-        image-clip: 68 102 34 34
-        visible: true
-        enabled: true
-        $hover !checked:
-          size: 34 34
-          image-clip: 68 102 34 34
-        $pressed:
-          size: 34 34
-          image-clip: 68 136 34 34
-        $checked:
-          size: 134 34
-          image-clip: 0 68 134 34
-        @onClick: loadMenu('shooterMenu')
-
-    HealingPanel
-      id: healingPanel
-      anchors.top: optionsTabBar.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-top: 5
-      visible: false
-
-    ToolsPanel
-      id: toolsPanel
-      anchors.top: optionsTabBar.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-top: 5
-      visible: false
-
-    ShooterPanel
-      id: shooterPanel
-      anchors.top: optionsTabBar.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-top: 5
-      visible: false
-
-    HorizontalSeparator
-      id: separator
-      anchors.bottom: next.top
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-bottom: 7
-
-    Button
-      id: close
-      anchors.bottom: parent.bottom
-      anchors.right: parent.right
-      !text: tr('Close')
-      size: 43 20
-      @onClick: hide()
-
-    Button
-      id: tracker
-      anchors.bottom: parent.bottom
-      anchors.right: prev.left
-      margin-right: 5
-      !text: tr('Helper Stats')
-      size: 73 20
-      @onClick: toggleHelperTracker()
-
-    Label
-      anchors.bottom: parent.bottom
-      anchors.left: parent.left
-      margin-bottom: 8
-      !text: tr('Helper Status:')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-
-    Label
-      id: helperStatusLabel
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      !text: tr('Status')
-      font: $var-cip-font
-      color: $var-text-cip-color
-      text-auto-resize: true
-
-    UIButton
-      id: helperStatus
-      size: 12 9
-      anchors.bottom: prev.bottom
-      anchors.left: prev.right
-      margin-left: 5
-      margin-bottom: 2
-      image-source: /images/store/icon-yes
-      @onClick: botStatus()
-      !tooltip: tr(' - Helper Status: [ENABLED]')
-
-    Button
-      id: setKeyHelperButton
-      size: 41 15
-      anchors.bottom: prev.bottom
-      anchors.left: prev.right
-      margin-left: 5
-      margin-bottom: -3
-      !text: tr('Set Key')
-      @onClick: manageHotkeys("Enable/Disable Helper")

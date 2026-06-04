@@ -2,8 +2,8 @@ NewMainWindow
   id: window
   anchors.horizontalCenter: parent.horizontalCenter
   !text: tr('Add shooter preset')
-  font: $var-cip-font
-  color: $var-text-cip-color-grey
+  font: $var-main-font
+  color: #AAAAAA
   size: 360 121
   @onClose:
   @onEscape: self:hide()
@@ -19,14 +19,12 @@ NewMainWindow
       anchors.top: parent.top
       anchors.left: parent.left
       margin-left: 1
-      image-source: /images/optionstab/name-label
-    UIWidget
+      image-source: /images/ui/labels/name-label
+    UITooltipRed
       id: warning
-      size: 12 12
       anchors.top: prev.top
       anchors.left: prev.right
       margin-left: 10
-      image-source: /images/skin/show-gui-help-red
       visible: false
       !tooltip: tr('')
 
@@ -37,7 +35,7 @@ NewMainWindow
       anchors.top: prev.bottom
       anchors.left: parent.left
       anchors.right: parent.right
-      max-length: 7
+      max-length: 20
       margin-top: 6
 
     HorizontalSeparator
@@ -47,17 +45,13 @@ NewMainWindow
       anchors.right: parent.right
       margin-top: 11
 
-    Button
+    CancelButton
       id: cancelButton
       anchors.bottom: parent.bottom
       anchors.right: parent.right
-      !text: tr('Cancel')
-      size: 43 20
 
-    Button
+    OkButton
       id: okButton
       anchors.bottom: parent.bottom
       anchors.right: prev.left
-      margin-right: 10
-      !text: tr('Ok')
-      size: 43 20
+      margin-right: 6

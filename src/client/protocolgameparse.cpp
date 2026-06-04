@@ -2730,6 +2730,7 @@ void ProtocolGame::parseCyclopediaMapData(const InputMessagePtr& msg)
                 msg->getU32();
                 msg->getU8();
             }
+            break;
         }
         case 10:
         {

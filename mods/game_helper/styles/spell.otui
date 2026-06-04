@@ -6,23 +6,23 @@ SpellPreview < UICheckBox
   text-offset: 38 2
   image-source:
   change-cursor-image: false
-  font: $var-cip-font
-  color: $var-text-cip-color
+  font: $var-main-font
+  color: $var-text-color
 
   $hover !disabled:
-    color: #ffffff
+    color: $var-text-cip-color-white
 
   $!checked:
     background-color: alpha
-    color: $var-text-cip-color
+    color: $var-text-color
 
   $checked:
-    background-color: #585858
-    color: #f4f4f4
+    background-color: $var-textlist-selected
+    color: $var-text-cip-color-highlight
 
   $disabled:
-    image-color: #dfdfdf88
-    color: #dfdfdf88
+    image-color: $var-text-color-disabled
+    color: $var-text-color-disabled
     opacity: 0.8
 
   UIWidget
@@ -62,8 +62,8 @@ SpellPreview < UICheckBox
     margin-top: 12
     margin-left: 6
     !text: tr('Level: 0')
-    font: $var-cip-font
-    color: $var-text-cip-color
+    font: $var-main-font
+    color: $var-text-color
     text-auto-resize: true
     visible: false
 
@@ -116,9 +116,9 @@ NewMainWindow
       margin-left: 1
       !placeholder: tr('Type to search')
       padding: 2
-      font: $var-cip-font
-      placeholder-color: $var-cip-inactive-color
-      @onTextChange: modules.game_helper.onSearchTextChange(self:getText())
+      font: $var-main-font
+      placeholder-color: #888888
+      @onTextChange: modules.game_helper.onSearchTextChange(self:getText(), self:getParent():getParent())
     Button
       id: clearButton
       anchors.top: prev.top
@@ -128,7 +128,7 @@ NewMainWindow
       size: 18 18
       image-source: /images/store/button-erase-small-up
       image-clip: 0 0 18 18
-      @onClick: modules.game_helper.onClearSearchText()
+      @onClick: modules.game_helper.onClearSearchText(self:getParent():getParent())
       $pressed:
         image-source: /images/store/button-erase-small-down
         image-clip: 0 0 18 18
@@ -160,12 +160,12 @@ NewMainWindow
         anchors.right: parent.right
         margin-left: 5
         text: Only show learnt spells
-        font: $var-cip-font
-        color: $var-text-cip-color
+        font: $var-main-font
+        color: $var-text-color
         checked: true
         change-cursor-image: false
         $hover !disabled:
-          color: $var-text-cip-color
+          color: $var-text-color
 
     Label
       id: paramLabel
@@ -173,17 +173,17 @@ NewMainWindow
       margin-top: 7
       anchors.left: parent.left
       text: Parameter:
-      font: $var-cip-font
-      color: $var-text-cip-color
+      font: $var-main-font
+      color: $var-text-color
       text-auto-resize: true
       text-offset: -2 0
       on: false
 
       $on:
-        color: $var-text-cip-color
+        color: $var-text-color
 
       $!on:
-        color: #707070
+        color: $var-cip-inactive-color
 
     TextEdit
       id: paramText
