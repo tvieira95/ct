@@ -150,6 +150,9 @@ local function onCharacterList(protocol, characters, account, otui)
   end
 
   modules.client_background.toggleLogo(false)
+  if account.boostedCreature or account.boostedBoss then
+    modules.client_background.updateBoostedInfo(account.boostedCreature, account.boostedBoss)
+  end
   CharacterList.create(characters, account, otui)
   CharacterList.show()
 

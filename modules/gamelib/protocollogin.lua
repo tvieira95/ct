@@ -11,6 +11,7 @@ LoginServerSessionKey = 40
 LoginServerCharacterList = 100
 LoginServerExtendedCharacterList = 101
 LoginServerProxyList = 110
+LoginServerAstraBoostedInfo = 0xA1
 
 local AstraClientMarker = "A"
 
@@ -257,6 +258,40 @@ function ProtocolLogin:parseSessionKey(msg)
   signalcall(self.onSessionKey, self, sessionKey)
 end
 
+local function readLoginBoostedEntry(msg)
+  if msg:getU8() == 0 then
+    return nil
+  end
+
+  return {
+    raceId = msg:getU32(),
+    name = msg:getString(),
+    outfit = {
+      type = msg:getU16(),
+      auxType = 0,
+      head = msg:getU8(),
+      body = msg:getU8(),
+      legs = msg:getU8(),
+      feet = msg:getU8(),
+      addons = msg:getU8()
+    }
+  }
+end
+
+local function parseAstraBoostedInfo(msg, account)
+  if msg:getUnreadSize() < 1 then
+    return
+  end
+
+  local marker = msg:getU8()
+  if marker ~= LoginServerAstraBoostedInfo then
+    return
+  end
+
+  account.boostedCreature = readLoginBoostedEntry(msg)
+  account.boostedBoss = readLoginBoostedEntry(msg)
+end
+
 function ProtocolLogin:parseCharacterList(msg)
   local characters = {}
 
@@ -352,6 +387,7 @@ function ProtocolLogin:parseExtendedCharacterList(msg)
     account.status = AccountStatus.Ok
     account.premDays = msg:getU16()
     account.subStatus = account.premDays > 0 and SubscriptionStatus.Premium or SubscriptionStatus.Free
+    parseAstraBoostedInfo(msg, account)
     signalcall(self.onCharacterList, self, characters, account)
     return
   end
