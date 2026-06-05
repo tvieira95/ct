@@ -253,6 +253,7 @@ private:
     void parseRuleViolationRemove(const InputMessagePtr& msg);
     void parseRuleViolationCancel(const InputMessagePtr& msg);
     void parseRuleViolationLock(const InputMessagePtr& msg);
+    void parseHighscores(const InputMessagePtr& msg);
     void parseOwnTrade(const InputMessagePtr& msg);
     void parseCounterTrade(const InputMessagePtr& msg);
     void parseCloseTrade(const InputMessagePtr&);

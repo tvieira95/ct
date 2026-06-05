@@ -23,6 +23,7 @@
 #include "protocolgame.h"
 
 #include <algorithm>
+#include <ctime>
 #include <functional>
 #include <map>
 #include <tuple>
@@ -296,7 +297,10 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 parseRuleViolationCancel(msg);
                 break;
             case Proto::GameServerRuleViolationLock:
-                parseRuleViolationLock(msg);
+                if (msg->getUnreadSize() > 0 && msg->peekU8() <= 1)
+                    parseHighscores(msg);
+                else
+                    parseRuleViolationLock(msg);
                 break;
             case Proto::GameServerOpenOwnChannel:
                 parseOpenOwnPrivateChannel(msg);
@@ -2335,6 +2339,77 @@ void ProtocolGame::parseRuleViolationCancel(const InputMessagePtr& msg)
 void ProtocolGame::parseRuleViolationLock(const InputMessagePtr& msg)
 {
     g_game.processRuleViolationLock();
+}
+
+void ProtocolGame::parseHighscores(const InputMessagePtr& msg)
+{
+    using HighscoreEntry = std::tuple<uint32, std::string, uint8, std::string, uint16, bool, uint64, std::string>;
+
+    const uint8 status = msg->getU8();
+    if (status != 0) {
+        std::vector<std::string> worlds;
+        std::map<uint32, std::string> vocations;
+        vocations[0xFFFFFFFFu] = "(all)";
+        std::map<uint8, std::string> categories;
+        categories[0] = "Experience Points";
+        std::vector<HighscoreEntry> characters;
+        g_lua.callGlobalField("g_game", "onHighscores", worlds, std::string("All Game Worlds"), vocations,
+                              0xFFFFFFFFu, categories, static_cast<uint8>(0), static_cast<uint16>(1),
+                              static_cast<uint16>(1), characters, static_cast<uint32>(std::time(nullptr)));
+        return;
+    }
+
+    std::vector<std::string> worlds;
+    const uint8 worldCount = msg->getU8();
+    worlds.reserve(worldCount);
+    for (uint8 i = 0; i < worldCount; ++i)
+        worlds.push_back(msg->getString());
+
+    const std::string selectedWorld = msg->getString();
+    msg->getU8(); // game world category
+    msg->getU8(); // battleye world type
+
+    std::map<uint32, std::string> vocations;
+    const uint8 vocationCount = msg->getU8();
+    for (uint8 i = 0; i < vocationCount; ++i) {
+        const uint32 vocationId = msg->getU32();
+        vocations[vocationId] = msg->getString();
+    }
+
+    const uint32 selectedVocation = msg->getU32();
+    std::map<uint8, std::string> categories;
+    const uint8 categoryCount = msg->getU8();
+    for (uint8 i = 0; i < categoryCount; ++i) {
+        const uint8 categoryId = msg->getU8();
+        categories[categoryId] = msg->getString();
+    }
+
+    const uint8 selectedCategory = msg->getU8();
+    const uint16 page = msg->getU16();
+    const uint16 pages = msg->getU16();
+
+    std::vector<HighscoreEntry> characters;
+    const uint8 characterCount = msg->getU8();
+    characters.reserve(characterCount);
+    for (uint8 i = 0; i < characterCount; ++i) {
+        const uint32 rank = msg->getU32();
+        const std::string name = msg->getString();
+        const std::string title = msg->getString();
+        const uint8 vocationId = msg->getU8();
+        const std::string world = msg->getString();
+        const uint16 level = msg->getU16();
+        const bool isPlayer = msg->getU8() != 0;
+        const uint64 points = msg->getU64();
+        characters.emplace_back(rank, name, vocationId, world, level, isPlayer, points, title);
+    }
+
+    msg->getU8(); // unknown 0xFF
+    msg->getU8(); // display loyalty title column
+    msg->getU8(); // category type
+    const uint32 lastUpdate = msg->getU32();
+
+    g_lua.callGlobalField("g_game", "onHighscores", worlds, selectedWorld, vocations, selectedVocation,
+                          categories, selectedCategory, page, pages, characters, lastUpdate);
 }
 
 void ProtocolGame::parseTextMessage(const InputMessagePtr& msg)
