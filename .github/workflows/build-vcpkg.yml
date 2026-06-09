@@ -59,6 +59,8 @@ jobs:
             vcpkg-windows-
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
 
       - name: Configure CMake
         run: >

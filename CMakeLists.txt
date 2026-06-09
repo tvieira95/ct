@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.16)
 project(AstraClient)
 
 if(CMAKE_BASE_NAME STREQUAL "em++")
