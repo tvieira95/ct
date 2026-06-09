@@ -746,9 +746,8 @@ void ProtocolGame::parseRestingAreaState(const InputMessagePtr& msg)
 void ProtocolGame::parseBlessings(const InputMessagePtr& msg)
 {
     uint16 blessings = msg->getU16();
-    if (g_game.getFeature(Otc::GameTibia12Protocol)) {
-        msg->getU8(); // blessStatus - 1 = Disabled | 2 = normal | 3 = green
-    }
+    uint8_t blessVisualState = msg->getU8();
+    (void)blessVisualState;
     m_localPlayer->setBlessings(blessings);
 }
 
@@ -3048,36 +3047,43 @@ void ProtocolGame::parseMessageDialog(const InputMessagePtr& msg)
 
 void ProtocolGame::parseBlessDialog(const InputMessagePtr& msg)
 {
-    // parse bless amount
-    uint8_t totalBless = msg->getU8(); // total bless
+	g_lua.newTable();
+	{
+		uint8_t totalBless = msg->getU8();
+		g_lua.newTable();
+		for (int i = 0; i < totalBless; i++) {
+			g_lua.newTable();
+			g_lua.pushInteger(msg->getU16());  g_lua.rawSeti(1);
+			g_lua.pushInteger(msg->getU8());   g_lua.rawSeti(2);
+			g_lua.pushInteger(msg->getU8());   g_lua.rawSeti(3);
+			g_lua.rawSeti(i + 1);
+		}
+		g_lua.setField("blesses");
 
-    // parse each bless
-    for (int i = 0; i < totalBless; i++) {
-        msg->getU16(); // bless bit wise
-        msg->getU8(); // player bless count
-        if (g_game.getProtocolVersion() >= 1220) {
-            msg->getU8(); // store?
-        }
-    }
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("premium");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("promotion");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("pvpMinXpLoss");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("pvpMaxXpLoss");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("pveExpLoss");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("equipPvpLoss");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("equipPveLoss");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("skull");
+		g_lua.pushInteger(msg->getU8());  g_lua.setField("aol");
 
-    // parse general info
-    msg->getU8(); // premium
-    msg->getU8(); // promotion
-    msg->getU8(); // pvp min xp loss
-    msg->getU8(); // pvp max xp loss
-    msg->getU8(); // pve exp loss
-    msg->getU8(); // equip pvp loss
-    msg->getU8(); // equip pve loss
-    msg->getU8(); // skull
-    msg->getU8(); // aol
-
-    // parse log
-    uint8_t logCount = msg->getU8(); // log count
-    for (int i = 0; i < logCount; i++) {
-        msg->getU32(); // timestamp
-        msg->getU8(); // color message (0 = white loss, 1 = red)
-        msg->getString(); // history message
-    }
+		uint8_t logCount = msg->getU8();
+		g_lua.newTable();
+		for (int i = 0; i < logCount; i++) {
+			g_lua.newTable();
+			g_lua.pushInteger(msg->getU32());       g_lua.rawSeti(1);
+			g_lua.pushInteger(msg->getU8());        g_lua.rawSeti(2);
+			g_lua.pushString(msg->getString());     g_lua.rawSeti(3);
+			g_lua.rawSeti(i + 1);
+		}
+		g_lua.setField("logs");
+	}
+	// Store data table as global blessDialogData, then call with 0 args
+	g_lua.setGlobal("blessDialogData");
+	g_lua.callGlobalField("g_game", "onBlessingDialog");
 }
 
 void ProtocolGame::parseResourceBalance(const InputMessagePtr& msg)
@@ -3204,11 +3210,11 @@ static void parseWeaponProficiencyInfoPayload(const InputMessagePtr& msg)
     const uint16_t itemId = msg->getU16();
     const uint32_t experience = msg->getU32();
     const uint8_t perksCount = msg->getU8();
-    std::map<uint8_t, uint8_t> perks;
+    std::vector<std::vector<uint8_t>> perks;
     for (int i = 0; i < perksCount; ++i) {
         const uint8_t level = msg->getU8();
         const uint8_t perkPosition = msg->getU8();
-        perks[level] = perkPosition;
+        perks.push_back({ level, perkPosition });
     }
 
     const uint16_t marketCategory = msg->getU16();

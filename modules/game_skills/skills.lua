@@ -11,6 +11,169 @@ local lastManaValue = nil
 
 skillWidgetsOptions = {}
 
+local combatElementMap = {
+  [0] = "physical",
+  [1] = "fire",
+  [2] = "earth",
+  [3] = "energy",
+  [4] = "ice",
+  [5] = "holy",
+  [6] = "death",
+  [7] = "healing",
+  [8] = "drowning",
+  [9] = "lifeDrain",
+  [10] = "manaDrain",
+  [11] = "agony",
+}
+
+local function onWheelSkillStats(protocol, opcode, data)
+  if type(data) ~= "table" then
+    return
+  end
+
+  local offensePanel = skillsWindow:recursiveGetChildById("attackPanel")
+
+  local dmgHealWidget = skillsWindow:recursiveGetChildById("damageHealingLabel")
+  local dmgHealVal = tonumber(data.damageAndHealing) or 0
+  if dmgHealWidget then
+    dmgHealWidget:setText(tostring(math.floor(dmgHealVal + 0.5)))
+  end
+
+  local atkWidget = skillsWindow:recursiveGetChildById("attackValue")
+  local atkVal = tonumber(data.attackValue) or 0
+  local atkElem = tonumber(data.attackElement) or 0
+  if atkWidget then
+    atkWidget:recursiveGetChildById("value"):setText(tostring(math.floor(atkVal + 0.5)))
+    if atkVal > 0 then
+      atkWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    end
+    atkWidget:recursiveGetChildById("combatIcon"):setImageSource("/game_cyclopedia/images/icons/stats/element_" .. atkElem)
+  end
+
+  local lifeWidget = skillsWindow:recursiveGetChildById("lifeLeech")
+  local lifeVal = tonumber(data.lifeLeech) or 0
+  if lifeWidget and math.abs(lifeVal) > 0.0001 then
+    lifeWidget:recursiveGetChildById("value"):setText(string.format("+%.2f%%", lifeVal * 100))
+    lifeWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    lifeWidget:setVisible(true)
+  elseif lifeWidget then
+    lifeWidget:setVisible(false)
+  end
+
+  local manaWidget = skillsWindow:recursiveGetChildById("manaLeech")
+  local manaVal = tonumber(data.manaLeech) or 0
+  if manaWidget and math.abs(manaVal) > 0.0001 then
+    manaWidget:recursiveGetChildById("value"):setText(string.format("+%.2f%%", manaVal * 100))
+    manaWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    manaWidget:setVisible(true)
+  elseif manaWidget then
+    manaWidget:setVisible(false)
+  end
+
+  local critChance = tonumber(data.criticalChance) or 0
+  local critDamage = tonumber(data.criticalDamage) or 0
+  local critSeparator = skillsWindow:recursiveGetChildById("skillIdHitSeparator")
+  local critChanceWidget = skillsWindow:recursiveGetChildById("criticalChance")
+  local critDamageWidget = skillsWindow:recursiveGetChildById("criticalDamage")
+  if critSeparator and (math.abs(critChance) > 0.0001 or math.abs(critDamage) > 0.0001) then
+    critSeparator:setVisible(true)
+  elseif critSeparator then
+    critSeparator:setVisible(false)
+  end
+  if critChanceWidget and math.abs(critChance) > 0.0001 then
+    critChanceWidget:recursiveGetChildById("value"):setText(string.format("+%.2f%%", critChance * 100))
+    critChanceWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    critChanceWidget:setVisible(true)
+  elseif critChanceWidget then
+    critChanceWidget:setVisible(false)
+  end
+  if critDamageWidget and math.abs(critDamage) > 0.0001 then
+    critDamageWidget:recursiveGetChildById("value"):setText(string.format("+%.2f%%", critDamage * 100))
+    critDamageWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    critDamageWidget:setVisible(true)
+  elseif critDamageWidget then
+    critDamageWidget:setVisible(false)
+  end
+
+  local defenseVal = tonumber(data.defense) or 0
+  local armorVal = tonumber(data.armor) or 0
+  local mitiVal = tonumber(data.mitigation) or 0
+
+  local defWidget = skillsWindow:recursiveGetChildById("defenseValue")
+  if defWidget then
+    defWidget:recursiveGetChildById("value"):setText(tostring(math.floor(defenseVal + 0.5)))
+    if math.abs(defenseVal) > 0.0001 then
+      defWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    end
+  end
+
+  local armorWidget = skillsWindow:recursiveGetChildById("armorValue")
+  if armorWidget then
+    armorWidget:recursiveGetChildById("value"):setText(tostring(math.floor(armorVal + 0.5)))
+    if math.abs(armorVal) > 0.0001 then
+      armorWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    end
+  end
+
+  local mitiWidget = skillsWindow:recursiveGetChildById("mitigationValue")
+  if mitiWidget then
+    mitiWidget:recursiveGetChildById("value"):setText(string.format("+%.2f%%", mitiVal * 100))
+    if math.abs(mitiVal) > 0.0001 then
+      mitiWidget:recursiveGetChildById("value"):setColor("#44ad25")
+    end
+  end
+
+  local convertedWidget = skillsWindow:recursiveGetChildById("convertedDamage")
+  local convertedVal = tonumber(data.convertedValue) or 0
+  local convertedElem = tonumber(data.convertedElement) or 0
+  if convertedWidget then
+    if convertedVal > 0 then
+      convertedWidget:recursiveGetChildById("value"):setText(string.format("+%d%%", math.floor(convertedVal * 100 + 0.5)))
+      convertedWidget:recursiveGetChildById("combatIcon"):setImageSource("/game_cyclopedia/images/icons/stats/element_" .. convertedElem)
+      convertedWidget:setVisible(true)
+    else
+      convertedWidget:setVisible(false)
+    end
+  end
+
+  if data.absorbs then
+    for idx, name in pairs(combatElementMap) do
+      local w = skillsWindow:recursiveGetChildById("elementalDefense_" .. idx)
+      if w then
+        local absorbVal = tonumber(data.absorbs[name]) or 0
+        if math.abs(absorbVal) > 0.0001 then
+          w:recursiveGetChildById("value"):setText(string.format("%+.2f%%", absorbVal * 100))
+          w:recursiveGetChildById("value"):setColor(absorbVal > 0 and "#44ad25" or "#ff9854")
+          w:setVisible(true)
+        else
+          w:setVisible(false)
+        end
+      end
+    end
+  end
+
+  scheduleEvent(function()
+    skillsWindow:setContentMaximumHeight(math.max(125, getContentPanelHeight() + 6))
+  end, 100)
+end
+
+local function onMonkData(protocol, opcode, data)
+  if type(data) ~= "table" then return end
+
+  local player = g_game.getLocalPlayer()
+  if not player then return end
+
+  local harmony = tonumber(data.harmony) or 0
+  local serene = data.serene == true
+
+  if modules.game_topbar and modules.game_topbar.onHarmonyChange then
+    modules.game_topbar.onHarmonyChange(player, harmony)
+  end
+  if modules.game_topbar and modules.game_topbar.onSerenityChange then
+    modules.game_topbar.onSerenityChange(player, serene)
+  end
+end
+
 local skillNames = {
   [0] = "Fist",
   [1] = "Club",
@@ -79,6 +242,8 @@ function init()
   })
 
   skillsWindow = g_ui.loadUI('skills')
+  ProtocolGame.registerExtendedJSONOpcode(ExtendedIds.WheelSkills, onWheelSkillStats)
+  ProtocolGame.registerExtendedJSONOpcode(ExtendedIds.MonkData, onMonkData)
   storeXPButton = skillsWindow:recursiveGetChildById('boostButton')
   skillsWindow:hide()
 
@@ -138,6 +303,9 @@ function terminate()
     onGameStart = onGameStart,
     onGameEnd = offline
   })
+
+  ProtocolGame.unregisterExtendedJSONOpcode(ExtendedIds.WheelSkills)
+  ProtocolGame.unregisterExtendedJSONOpcode(ExtendedIds.MonkData)
 
   skillsWindow:destroy()
 end

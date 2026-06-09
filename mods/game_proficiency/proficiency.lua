@@ -157,8 +157,27 @@ local function getPlayerWheelVocation()
         return translateWheelVocation(player:getVocation())
     end
 
+    -- TFS 8.60: map to wheel index (1=Knight,2=Paladin,3=Sorcerer,4=Druid,5=Monk)
     local vocation = player:getVocation()
-    return vocation > 10 and vocation - 10 or vocation
+    if vocation == 4 or vocation == 8 then return 1 end
+    if vocation == 3 or vocation == 7 then return 2 end
+    if vocation == 1 or vocation == 5 then return 3 end
+    if vocation == 2 or vocation == 6 then return 4 end
+    if vocation == 9 or vocation == 10 then return 5 end
+    return 0
+end
+
+local function getPlayerWheelVocationById(vocationId)
+    if not vocationId or vocationId <= 0 then return 0 end
+    if translateWheelVocation then
+        return translateWheelVocation(vocationId)
+    end
+    if vocationId == 4 or vocationId == 8 then return 1 end
+    if vocationId == 3 or vocationId == 7 then return 2 end
+    if vocationId == 1 or vocationId == 5 then return 3 end
+    if vocationId == 2 or vocationId == 6 then return 4 end
+    if vocationId == 9 or vocationId == 10 then return 5 end
+    return 0
 end
 
 local function hasBit(mask, bitMask)
@@ -173,7 +192,7 @@ local function vocationBit(vocation)
         return 0
     end
     if Bit and Bit.bit then
-        return Bit.bit(vocation)
+        return Bit.bit(vocation - 1)
     end
     return 2 ^ (vocation - 1)
 end
@@ -185,7 +204,7 @@ local function vocationRestrictionMatches(restrictVocation, playerVocation)
 
     if type(restrictVocation) == "table" then
         for _, vocationId in pairs(restrictVocation) do
-            local normalized = vocationId > 10 and vocationId - 10 or vocationId
+            local normalized = getPlayerWheelVocationById(vocationId)
             if normalized == playerVocation then
                 return true
             end
@@ -397,146 +416,75 @@ function initTopBarProficiency(attempts)
     attempts = attempts or 0
     local maxRetries = 15
 
-    -- Delay initialization to ensure StatsBar is fully loaded
     cancelTopBarProficiencyInit()
     WeaponProficiency.topBarInitEvent = scheduleEvent(function()
         WeaponProficiency.topBarInitEvent = nil
-        -- Access StatsBar through modules.game_interface
-        local StatsBarModule = modules.game_interface and modules.game_interface.StatsBar
-        if not StatsBarModule then
+
+        if not modules.game_topbar or not modules.game_topbar.onUpdateProficiencyWidget then
             if attempts < maxRetries then
                 initTopBarProficiency(attempts + 1)
             end
             return
         end
 
-        local statsBar = StatsBarModule.getCurrentStatsBarWithPosition and
-                             StatsBarModule.getCurrentStatsBarWithPosition()
-        if statsBar then
-            local profWidget = statsBar:recursiveGetChildById('proficiencyTopBar')
-            if profWidget then
-                profWidget:setVisible(true)
-
-                -- Request proficiency data for equipped weapon
-                local player = g_game.getLocalPlayer()
-                if player then
-                    local leftSlotItem = getLeftSlotItem()
-                    if leftSlotItem then
-                        local itemId = leftSlotItem:getId()
-                        sendWeaponProficiencyAction(0, itemId)
-                    end
-                end
-                updateTopBarProficiency()
-            end
-        else
-            if attempts < maxRetries then
-                initTopBarProficiency(attempts + 1)
+        local player = g_game.getLocalPlayer()
+        if player then
+            local leftSlotItem = getLeftSlotItem()
+            if leftSlotItem then
+                local itemId = leftSlotItem:getId()
+                sendWeaponProficiencyAction(0, itemId)
             end
         end
-    end, 500) -- 500ms delay
+        -- updateTopBarProficiency() will be called when server data arrives
+    end, 500)
 end
 
 -- Update the proficiency progress bar in the top bar
 function updateTopBarProficiency()
-    -- Access StatsBar through modules.game_interface
-    local StatsBarModule = modules.game_interface and modules.game_interface.StatsBar
-    if not StatsBarModule then
-        return
-    end
-
-    local statsBar = StatsBarModule.getCurrentStatsBarWithPosition and StatsBarModule.getCurrentStatsBarWithPosition()
-    if not statsBar then
-        return
-    end
-
-    local profWidget = statsBar:recursiveGetChildById('proficiencyTopBar')
-    if not profWidget then
-        return
-    end
-
-    -- Get equipped weapon
     local player = g_game.getLocalPlayer()
     if not player then
         return
     end
 
     local leftSlotItem = getLeftSlotItem()
-    if not leftSlotItem then
-        -- No weapon equipped - show 0%
-        local progressBar = profWidget:getChildById('proficiencyProgress')
-        local label = profWidget:getChildById('proficiencyLabel')
-        if progressBar then
-            progressBar:setPercent(0)
-        end
-        if label then
-            label:setText('0%')
-        end
+    local itemId = leftSlotItem and leftSlotItem:getId() or 0
+    local cacheData = itemId > 0 and WeaponProficiency.cacheList[itemId] or nil
+    local thingType = leftSlotItem and leftSlotItem.getThingType and leftSlotItem:getThingType()
+
+    if not modules.game_topbar then
         return
     end
 
-    local itemId = leftSlotItem:getId()
-    local cacheData = WeaponProficiency.cacheList[itemId]
+    -- No weapon at all -> hide the bar
+    if not leftSlotItem or itemId == 0 then
+        modules.game_topbar.onUpdateProficiencyWidget(true)
+        return
+    end
 
-    if cacheData then
-        local exp = cacheData.exp or 0
-
-        -- Get thingType for calculations
-        local thingType = nil
-        if leftSlotItem.getThingType then
-            thingType = leftSlotItem:getThingType()
-        end
-
-        -- Calculate percent for next level (not total)
-        local percent = 0
-        local currentLevel = 0
-        local nextLevelExp = 0
-        local currentLevelExp = 0
-
-        if ProficiencyData and ProficiencyData.getCurrentLevelByExp and ProficiencyData.getLevelPercent then
-            -- Get current level
-            currentLevel = ProficiencyData:getCurrentLevelByExp(leftSlotItem, exp, false, thingType) or 0
-            -- Get percent progress to next level
-            local nextLevel = currentLevel + 1
-            percent = ProficiencyData:getLevelPercent(exp, nextLevel, leftSlotItem, thingType) or 0
-
-            -- Get exp values for tooltip
-            if ProficiencyData.getMaxExperienceByLevel then
-                currentLevelExp = currentLevel > 0 and
-                                      (ProficiencyData:getMaxExperienceByLevel(currentLevel, leftSlotItem, thingType) or
-                                          0) or 0
-                nextLevelExp = ProficiencyData:getMaxExperienceByLevel(nextLevel, leftSlotItem, thingType) or 0
-            end
-        end
-
-        percent = math.min(100, math.max(0, percent))
-
-        local progressBar = profWidget:getChildById('proficiencyProgress')
-        local label = profWidget:getChildById('proficiencyLabel')
-        local bg = profWidget:getChildById('proficiencyBg')
-
-        if progressBar then
-            progressBar:setPercent(percent)
-        end
-        if label then
-            label:setText(percent .. '%')
-        end
-        if bg then
-            local expInLevel = exp - currentLevelExp
-            local expNeeded = nextLevelExp - currentLevelExp
-            bg:setTooltip(string.format("Proficiency Progress: %s / %s", tostring(expInLevel), tostring(expNeeded)))
-        end
-
-        -- Show/hide highlight based on unused perk
-        local highlight = profWidget:getChildById('highlightProficiencyButton')
-        if highlight then
-            highlight:setVisible(WeaponProficiency.hasUnusedPerk == true)
-        end
-
-        -- Store for reference
-        WeaponProficiency.currentEquippedExp = exp
-        WeaponProficiency.currentEquippedMaxExp = nextLevelExp
-    else
+    -- Have weapon but no cached proficiency data yet -> request and leave bar as-is
+    if not cacheData then
         sendWeaponProficiencyAction(0, itemId)
+        return
+    end
+
+    -- Have weapon and cached data -> check if it has a proficiency and update
+    local proficiencyId = nil
+    if thingType and thingType.getProficiencyId then
+        proficiencyId = thingType:getProficiencyId()
+    end
+    if not proficiencyId then
+        proficiencyId = ProficiencyData:getProficiencyIdForItem(leftSlotItem, thingType)
+    end
+
+    if proficiencyId and proficiencyId > 0 then
+        modules.game_topbar.onUpdateProficiencyData(
+            cacheData,
+            WeaponProficiency.hasUnusedPerk,
+            thingType or leftSlotItem
+        )
+        modules.game_topbar.onUpdateProficiencyWidget(false)
+    else
+        modules.game_topbar.onUpdateProficiencyWidget(true)
     end
 end
 
@@ -1190,9 +1138,9 @@ function WeaponProficiency:addCatalogItem(itemId, category, name)
         category = MarketCategory.WeaponsAll
     end
 
-    local item = Item.create(itemId)
-    if not item then
-        return
+    local status, item = pcall(Item.create, itemId)
+    if not status or not item then
+        item = { getId = function() return itemId end }
     end
 
     local marketItem = {
