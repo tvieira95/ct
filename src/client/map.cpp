@@ -36,6 +36,10 @@
 #include <framework/util/extras.h>
 #include <set>
 
+namespace {
+constexpr int ANIMATED_TEXT_HORIZONTAL_PADDING = 4;
+}
+
 Map g_map;
 TilePtr Map::m_nulltile = nullptr;
 
@@ -131,33 +135,49 @@ void Map::addThing(const ThingPtr& thing, const Position& pos, int stackPos)
         if(thing->isMissile()) {
             m_floorMissiles[pos.z].push_back(thing->static_self_cast<Missile>());
         } else if(thing->isAnimatedText()) {
-            // this code will stack animated texts of the same color
             AnimatedTextPtr animatedText = thing->static_self_cast<AnimatedText>();
 
-            AnimatedTextPtr prevAnimatedText;
+            std::vector<AnimatedTextPtr> activeTexts;
             bool merged = false;
-			for (auto other : m_animatedTexts) {
-				if (other->getPosition() == pos) {
-					prevAnimatedText = other;
-					if (!g_game.getFeature(Otc::GameDontMergeAnimatedText)) {
-						if (other->merge(animatedText)) {
-							merged = true;
-							break;
-						}
-					}
-				}
-			}
+
+            for(auto other : m_animatedTexts) {
+                if(other->getPosition() != pos)
+                    continue;
+
+                if(other->getTimer().ticksElapsed() >= Otc::ANIMATED_TEXT_DURATION * 0.7f)
+                    continue;
+
+                if(!merged && !g_game.getFeature(Otc::GameDontMergeAnimatedText)) {
+                    if(other->merge(animatedText))
+                        merged = true;
+                }
+
+                activeTexts.push_back(other);
+            }
 
             if(!merged) {
-                if(prevAnimatedText) {
-                    Point offset = prevAnimatedText->getOffset();
-                    float t = prevAnimatedText->getTimer().ticksElapsed();
-                    int y = 48 * t / (float)Otc::ANIMATED_TEXT_DURATION;
-                    offset -= Point(0, y);
-                    offset.y = std::min<int>(std::max<int>(0, offset.y + 12), 24);
-                    animatedText->setOffset(offset);
-                }
                 m_animatedTexts.push_back(animatedText);
+                activeTexts.push_back(animatedText);
+            }
+
+            int rightEdge = 0;
+            bool firstText = true;
+            for(auto it = activeTexts.rbegin(); it != activeTexts.rend(); ++it) {
+                AnimatedTextPtr text = *it;
+                const int width = text->getTextSize().width();
+                const int leftHalf = width / 2;
+                const int rightHalf = (width + 1) / 2;
+
+                if(firstText) {
+                    text->setOffset(Point(0, 0));
+                    rightEdge = rightHalf;
+                    firstText = false;
+                    continue;
+                }
+
+                const int offset = rightEdge + leftHalf + ANIMATED_TEXT_HORIZONTAL_PADDING;
+                text->setOffset(Point(offset, 0));
+                rightEdge = offset + rightHalf;
             }
         } else if(thing->isStaticText()) {
             StaticTextPtr staticText = thing->static_self_cast<StaticText>();

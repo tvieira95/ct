@@ -48,7 +48,11 @@ void AnimatedText::drawText(const Point& dest, const Rect& visibleRect)
     }
 
     p.y += (-48 * t) / tf;
-    p += m_offset;
+
+    updateOffset(m_offsetTimer.timeElapsed());
+    m_offsetTimer.restart();
+
+    p += Point(static_cast<int>(std::round(m_offset.x)), static_cast<int>(std::round(m_offset.y)));
     Rect rect(p, textSize);
 
     if(visibleRect.contains(rect)) {
@@ -64,10 +68,25 @@ void AnimatedText::drawText(const Point& dest, const Rect& visibleRect)
 void AnimatedText::onAppear()
 {
     m_animationTimer.restart();
+    m_offsetTimer.restart();
 
     // schedule removal
     auto self = asAnimatedText();
     g_dispatcher.scheduleEvent([self]() { g_map.removeThing(self); }, Otc::ANIMATED_TEXT_DURATION);
+}
+
+void AnimatedText::updateOffset(float dt)
+{
+    if(m_offset != m_targetOffset) {
+        const float factor = 1.0f - std::pow(1.0f - 0.15f, dt * 60.0f);
+        m_offset.x += (m_targetOffset.x - m_offset.x) * factor;
+        m_offset.y += (m_targetOffset.y - m_offset.y) * factor;
+
+        if(std::abs(m_offset.x - m_targetOffset.x) < 0.1f)
+            m_offset.x = m_targetOffset.x;
+        if(std::abs(m_offset.y - m_targetOffset.y) < 0.1f)
+            m_offset.y = m_targetOffset.y;
+    }
 }
 
 void AnimatedText::setColor(int color)
