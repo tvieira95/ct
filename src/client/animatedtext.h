@@ -27,6 +27,7 @@
 #include <framework/graphics/fontmanager.h>
 #include <framework/core/timer.h>
 #include <framework/graphics/cachedtext.h>
+#include <cmath>
 
 // @bindclass
 class AnimatedText : public Thing
@@ -38,12 +39,13 @@ public:
 
     void setColor(int color);
     void setText(const std::string& text);
-    void setOffset(const Point& offset) { m_offset = offset; }
+    void setOffset(const Point& offset) { m_targetOffset = PointF(offset.x, offset.y); }
     void setFont(const std::string& fontName);
 
     Color getColor() { return m_color; }
     const CachedText& getCachedText() const { return m_cachedText; }
-    Point getOffset() { return m_offset; }
+    Size getTextSize() { return m_cachedText.getTextSize(); }
+    Point getOffset() { return Point(static_cast<int>(std::round(m_offset.x)), static_cast<int>(std::round(m_offset.y))); }
     Timer getTimer() { return m_animationTimer; }
 
     bool merge(const AnimatedTextPtr& other);
@@ -59,7 +61,8 @@ private:
     Color m_color;
     Timer m_animationTimer;
     CachedText m_cachedText;
-    Point m_offset;
+    PointF m_offset;
+    PointF m_targetOffset;
 };
 
 #endif

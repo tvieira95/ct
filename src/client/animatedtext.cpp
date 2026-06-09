@@ -48,7 +48,18 @@ void AnimatedText::drawText(const Point& dest, const Rect& visibleRect)
     }
 
     p.y += (-48 * t) / tf;
-    p += m_offset;
+
+    if(m_offset != m_targetOffset) {
+        m_offset.x += (m_targetOffset.x - m_offset.x) * 0.15f;
+        m_offset.y += (m_targetOffset.y - m_offset.y) * 0.15f;
+
+        if(std::abs(m_offset.x - m_targetOffset.x) < 0.1f)
+            m_offset.x = m_targetOffset.x;
+        if(std::abs(m_offset.y - m_targetOffset.y) < 0.1f)
+            m_offset.y = m_targetOffset.y;
+    }
+
+    p += Point(static_cast<int>(std::round(m_offset.x)), static_cast<int>(std::round(m_offset.y)));
     Rect rect(p, textSize);
 
     if(visibleRect.contains(rect)) {
