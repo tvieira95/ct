@@ -34,7 +34,9 @@ _Helper.LowHealthAlarm.toggle = function(checked)
   config.health.enabled = checked
 
   if not checked then
-    g_sounds.stopAlarm()
+    if g_sounds then
+      g_sounds.stopAlarm()
+    end
   end
 
   if not checked then
@@ -97,7 +99,9 @@ end
 
 -- Reset state (stop sound)
 _Helper.LowHealthAlarm.resetCheckbox = function()
-  g_sounds.stopAlarm()
+  if g_sounds then
+    g_sounds.stopAlarm()
+  end
   lastPlayTime = 0
 end
 

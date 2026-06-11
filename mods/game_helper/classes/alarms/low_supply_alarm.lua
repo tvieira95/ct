@@ -90,7 +90,9 @@ _Helper.LowSupplyAlarm.toggle = function(checked)
   config.supply.enabled = checked
 
   if not checked then
-    g_sounds.stopAlarm()
+    if g_sounds then
+      g_sounds.stopAlarm()
+    end
   end
 
   if not checked then
@@ -174,7 +176,9 @@ _Helper.LowSupplyAlarm.check = function()
 end
 
 _Helper.LowSupplyAlarm.resetCheckbox = function()
-  g_sounds.stopAlarm()
+  if g_sounds then
+    g_sounds.stopAlarm()
+  end
   lastPlayTime = 0
 
   -- Fechar settings window se aberta

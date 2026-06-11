@@ -2305,7 +2305,7 @@ function onPlayerLoad(config)
       if panel then
         for _, widget in pairs(panel:getChildren()) do
           if widget:isVisible() and not string.containsTable(widget:getId(), primordial) then
-            widget:close()
+            if widget.close then widget:close() end
           end
         end
 
@@ -2321,7 +2321,7 @@ function onPlayerLoad(config)
       if panel then
         for _, widget in pairs(panel:getChildren()) do
           if widget:isVisible() and not string.containsTable(widget:getId(), primordial) then
-            widget:close()
+            if widget.close then widget:close() end
           end
         end
 
@@ -2335,7 +2335,7 @@ function onPlayerLoad(config)
     if config.openWidgetsHorizontalRight then
       for _, widget in pairs(horizontalRightPanel:getChildren()) do
         if widget:isVisible() and not string.containsTable(widget:getId(), primordial) then
-          widget:close()
+          if widget.close then widget:close() end
         end
       end
 
@@ -2381,7 +2381,7 @@ function onPlayerLoad(config)
     if config.openWidgetsHorizontalLeft then
       for _, widget in pairs(horizontalLeftPanel:getChildren()) do
         if widget:isVisible() and not string.containsTable(widget:getId(), primordial) then
-          widget:close()
+          if widget.close then widget:close() end
         end
       end
 

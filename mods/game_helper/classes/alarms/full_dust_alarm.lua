@@ -34,7 +34,7 @@ _Helper.FullDustAlarm.toggle = function(checked)
   local config = _Helper.AlarmSettings.getConfig()
   config.dust.enabled = checked
 
-  if not checked then
+  if not checked and g_sounds then
     g_sounds.stopAlarm()
   end
 
@@ -86,7 +86,9 @@ _Helper.FullDustAlarm.resetCheckbox = function()
     removeEvent(pendingEvent)
     pendingEvent = nil
   end
-  g_sounds.stopAlarm()
+  if g_sounds then
+    g_sounds.stopAlarm()
+  end
   wasDustFull = true
 end
 

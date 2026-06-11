@@ -33,7 +33,7 @@ _Helper.LowCapacityAlarm.toggle = function(checked)
   local config = _Helper.AlarmSettings.getConfig()
   config.cap.enabled = checked
 
-  if not checked then
+  if not checked and g_sounds then
     g_sounds.stopAlarm()
   end
 
@@ -101,7 +101,9 @@ _Helper.LowCapacityAlarm.resetCheckbox = function()
     _Helper.AlarmSettings.close()
   end
 
-  g_sounds.stopAlarm()
+  if g_sounds then
+    g_sounds.stopAlarm()
+  end
   lastPlayTime = 0
 
   _Helper.AlarmSettings.clearCache()
