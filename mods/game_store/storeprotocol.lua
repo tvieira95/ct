@@ -18,24 +18,41 @@ local offersById = {}
 local homeBanners = {}
 local homeBannerDelay = 10
 local pendingStoreRequest = nil
+local catalogLoaded = false
+local catalogRequestPending = false
+local currentCoins = 0
 
 local HOME_OFFER_LIMIT = 6
+
+local function resetCatalogCache()
+  categories = {}
+  offersByCategory = {}
+  offersById = {}
+  homeBanners = {}
+  homeBannerDelay = 10
+  pendingStoreRequest = nil
+  catalogLoaded = false
+  catalogRequestPending = false
+  currentCoins = 0
+end
 
 local function sendStoreMessage(msg)
   local protocolGame = g_game.getProtocolGame()
   if protocolGame then
     protocolGame:send(msg)
+    return true
   end
+  return false
 end
 
 local function normalizeOfferType(oftype)
   oftype = tostring(oftype or ""):lower()
-  if oftype:find("mount", 1, true) then
+  if oftype:find("hireling", 1, true) then
+    return CATEGORY_HIRELING
+  elseif oftype:find("mount", 1, true) then
     return CATEGORY_MOUNT
   elseif oftype:find("outfit", 1, true) then
     return CATEGORY_OUTFIT
-  elseif oftype:find("hireling", 1, true) then
-    return CATEGORY_HIRELING
   end
   return CATEGORY_ITEM
 end
@@ -49,6 +66,7 @@ local function buildOffer(rawOffer, categoryName)
     description = rawOffer.description,
     filter = categoryName or "",
     icon = rawOffer.icon or "",
+    storeSubtype = tostring(rawOffer.oftype or ""):lower(),
     itemId = itemId,
     offerType = offerType,
     state = OFFER_STATE_NONE,
@@ -143,6 +161,7 @@ local function showOffers(actionOrCategory, valueOrServiceType, serviceType)
 end
 
 local function parseCatalog(msg)
+  local startedAt = g_clock.millis()
   local coins = msg:getU32()
   local categoryCount = msg:getU16()
   categories = {}
@@ -186,6 +205,9 @@ local function parseCatalog(msg)
     }
   end
   homeBannerDelay = msg:getU8()
+  currentCoins = coins
+  catalogLoaded = true
+  catalogRequestPending = false
 
   signalcall(g_game.onStoreInit, "", 25)
   signalcall(g_game.onCoinBalance, coins, coins, 0)
@@ -198,6 +220,7 @@ local function parseCatalog(msg)
   else
     showOffers(OPEN_HOME, "", 0)
   end
+  Store:profileStep("parseCatalog", startedAt)
 end
 
 local function parseHistory(msg)
@@ -223,6 +246,7 @@ end
 local function onStoreMessage(protocolGame, msg)
   local response = msg:getU8()
   if response == RESP_ERROR then
+    catalogRequestPending = false
     signalcall(g_game.onStoreError, 0, msg:getString())
   elseif response == RESP_CATALOG then
     parseCatalog(msg)
@@ -230,6 +254,7 @@ local function onStoreMessage(protocolGame, msg)
     msg:getU32() -- offer id
     local message = msg:getString()
     local coins = msg:getU32()
+    currentCoins = coins
     signalcall(g_game.onCoinBalance, coins, coins, 0)
     signalcall(g_game.onStorePurchase, message)
   elseif response == RESP_HISTORY then
@@ -242,23 +267,51 @@ function StoreProtocol.register()
   if registered then
     return
   end
+  resetCatalogCache()
   ProtocolGame.unregisterOpcode(OPCODE_STORE_SEND)
   ProtocolGame.registerOpcode(OPCODE_STORE_SEND, onStoreMessage)
   registered = true
 end
 
 function StoreProtocol.unregister()
-  if not registered then
-    return
+  if registered then
+    ProtocolGame.unregisterOpcode(OPCODE_STORE_SEND)
+    registered = false
   end
-  ProtocolGame.unregisterOpcode(OPCODE_STORE_SEND)
-  registered = false
+  resetCatalogCache()
 end
 
-function StoreProtocol.openStore()
+function StoreProtocol.openStore(forceRefresh)
+  if forceRefresh then
+    resetCatalogCache()
+  elseif catalogLoaded then
+    signalcall(g_game.onStoreInit, "", 25)
+    signalcall(g_game.onCoinBalance, currentCoins, currentCoins, 0)
+    if StoreWindow and Offers and Offers.displayPanel then
+      showStoreWindow()
+    else
+      signalcall(g_game.onStoreCategories, categories)
+      showOffers(OPEN_HOME, "", 0)
+    end
+    return
+  elseif catalogRequestPending then
+    return
+  end
+
+  catalogRequestPending = true
   local msg = OutputMessage.create()
   msg:addU8(OPCODE_STORE_OPEN)
-  sendStoreMessage(msg)
+  if not sendStoreMessage(msg) then
+    catalogRequestPending = false
+  end
+end
+
+function StoreProtocol.forceRefresh()
+  StoreProtocol.openStore(true)
+end
+
+function StoreProtocol.isCatalogLoaded()
+  return catalogLoaded
 end
 
 function StoreProtocol.requestStoreOffers(actionOrCategory, valueOrServiceType, serviceType)
@@ -274,7 +327,10 @@ function StoreProtocol.buyStoreOffer(offerId, productType, name, unknown, offerN
   local msg = OutputMessage.create()
   msg:addU8(OPCODE_STORE_BUY)
   msg:addU32(offerId)
-  if name and name ~= "" then
+  if productType == OFFER_BUY_TYPE_HIRELING then
+    msg:addString(name or "")
+    msg:addU8(tonumber(unknown) or 1)
+  elseif name and name ~= "" then
     msg:addString(name)
   elseif offerName and offerName ~= "" then
     msg:addString(offerName)
@@ -303,6 +359,7 @@ function initStoreProtocol()
   })
 
   g_game.openStore = StoreProtocol.openStore
+  g_game.forceRefreshStore = StoreProtocol.forceRefresh
   g_game.requestStoreOffers = StoreProtocol.requestStoreOffers
   g_game.requestOfferDescription = StoreProtocol.requestOfferDescription
   g_game.buyStoreOffer = StoreProtocol.buyStoreOffer
