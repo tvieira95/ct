@@ -25,6 +25,7 @@
             "vipWidget",
             "spellListWidget",
             "skillWheelDialog",
+            "taskHuntDialog",
             "questDialog",
             "questTrackerWidget",
             "unjustifiedPoinsWidget",

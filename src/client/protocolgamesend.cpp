@@ -1293,47 +1293,51 @@ void ProtocolGame::sendPreyHuntingAction(int slot, int actionType, bool upgrade,
     send(msg);
 }
 
-void ProtocolGame::sendTaskBoardCommand(const std::string& action, const std::string& data)
+void ProtocolGame::sendTaskBoardAction(uint8_t option, uint16_t value, uint16_t extraValue)
 {
-    const std::string payload = "{\"action\":\"" + action + "\",\"data\":" + data + "}";
-    sendExtendedOpcode(205, payload);
-}
+    g_game.enableBotCall();
+    auto msg = std::make_shared<OutputMessage>();
+    msg->addU8(Proto::ClientTaskBoardAction);  // 0x5F
+    msg->addU8(option);
 
-void ProtocolGame::sendBountyTaskAction(int actionType, int param)
-{
-    sendTaskBoardCommand("bountyTaskAction",
-                         "{\"actionType\":" + std::to_string(actionType) +
-                         ",\"param\":" + std::to_string(param) + "}");
-}
-
-void ProtocolGame::sendWeeklyTaskAction(int actionType, int param)
-{
-    sendTaskBoardCommand("weeklyTaskAction",
-                         "{\"actionType\":" + std::to_string(actionType) +
-                         ",\"param\":" + std::to_string(param) + "}");
-}
-
-void ProtocolGame::sendTaskHuntingShopRequest()
-{
-    sendTaskBoardCommand("taskShopRequest");
-}
-
-void ProtocolGame::sendTaskHuntingShopPurchase(int itemId)
-{
-    sendTaskBoardCommand("taskShopPurchase", "{\"itemId\":" + std::to_string(itemId) + "}");
-}
-
-void ProtocolGame::sendBountyPreferredAction(int actionType, int slot, int raceId)
-{
-    sendTaskBoardCommand("bountyPreferredAction",
-                         "{\"actionType\":" + std::to_string(actionType) +
-                         ",\"slot\":" + std::to_string(slot) +
-                         ",\"raceId\":" + std::to_string(raceId) + "}");
-}
-
-void ProtocolGame::sendBountyTalismanUpgrade(int statType)
-{
-    sendTaskBoardCommand("bountyTalismanUpgrade", "{\"statType\":" + std::to_string(statType) + "}");
+    // Options with a single U8 payload:
+    switch (option) {
+        case 2:  // BOUNTY_CHANGE_DIFFICULTY
+        case 5:  // BOUNTY_SELECT_TASK
+        case 7:  // BOUNTY_TALISMAN_UPGRADE
+        case 8:  // WEEKLY_DELIVER
+        case 9:  // WEEKLY_SELECT_DIFFICULTY
+        case 11: // HUNTING_SHOP_BUY_OFFER
+            msg->addU8(static_cast<uint8_t>(std::clamp<uint16_t>(value, 0, 255)));
+            break;
+        // Options with U16 payload:
+        case 12: // PREFERRED_UNLOCK
+        case 13: // PREFERRED_CLEAR
+        case 14: // UNWANTED_CLEAR
+            msg->addU16(value);
+            break;
+        // Options with U16 + U16 payload:
+        case 15: // PREFERRED_ASSIGN
+        case 16: // UNWANTED_ASSIGN
+            msg->addU16(value);
+            msg->addU16(extraValue);
+            break;
+        // Options with no payload:
+        case 0:  // OPEN_BOUNTY
+        case 1:  // OPEN_WEEKLY
+        case 3:  // BOUNTY_REROLL
+        case 4:  // BOUNTY_CLAIM_DAILY
+        case 6:  // BOUNTY_CLAIM_REWARD
+        case 10: // OPEN_HUNTING_SHOP
+        case 17: // OPEN_SOULSEAL
+            break;
+        default:
+            g_logger.error(stdext::format("Unknown task board action option %d", static_cast<int>(option)));
+            g_game.disableBotCall();
+            return;
+    }
+    send(msg);
+    g_game.disableBotCall();
 }
 
 void ProtocolGame::sendPreyRequest()

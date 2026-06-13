@@ -6,7 +6,13 @@ local gameEvents
 
 local function getSoulsealBalance()
     local player = g_game.getLocalPlayer()
-    return player and player:getResourceBalance(ResourceTypes.SOULSEALS) or 0
+    return player and player:getResourceBalance(ResourceTypes.SOULSEAL_POINTS) or 0
+end
+
+local function setSoulsealBalance(balance)
+    if soulsealWindow then
+        soulsealWindow.balancePanel.balanceLabel:setText(comma_value(balance))
+    end
 end
 
 function init()
@@ -98,50 +104,51 @@ function offline()
     end
 end
 
-function onSoulsealsData(data)
+function onSoulsealsData(entries, balance)
     selectedIndex = nil
+    masteredRaceIds = {}
+    soulsealEntries = {}
 
-    if type(data) == "table" and #data > 0 and type(data[1]) == "table" and data[1].raceId and data[1].name then
-        soulsealEntries = data
-        masteredRaceIds = {}
-        for _, entry in ipairs(data) do
-            if entry.done then
-                masteredRaceIds[entry.raceId] = true
-            end
-        end
-    else
-        masteredRaceIds = {}
-        soulsealEntries = {}
-        if type(data) == "table" then
-            for _, raceId in ipairs(data) do
+    if type(entries) == "table" and #entries > 0 then
+        for _, entry in ipairs(entries) do
+            local raceData = g_things.registerRaceDataFromPacket and g_things.registerRaceDataFromPacket(entry) or nil
+            local raceId = tonumber(entry.raceId) or 0
+            local name = (raceData and raceData.name) or entry.name or "unknown"
+            local cost = tonumber(entry.cost) or 0
+            local stars = tonumber(entry.stars) or 0
+            local mastered = tonumber(entry.mastered) or tonumber(entry.done) or 0
+
+            if mastered == 1 then
                 masteredRaceIds[raceId] = true
-            local raceData = g_things.getRaceData(raceId)
-            local name = "unknown"
-            if raceData then
-                name = raceData.name or ("creature_" .. tostring(raceId))
             end
+
             table.insert(soulsealEntries, {
                 raceId = raceId,
                 name = name,
-                soulsealPoints = 0,
-                category = 0,
-                done = true,
+                soulsealPoints = cost,
+                stars = stars,
+                category = stars,  -- use stars as category fallback
+                done = mastered == 1,
             })
-            end
         end
     end
 
+    local currentBalance = tonumber(balance)
+    if currentBalance == nil then
+        currentBalance = getSoulsealBalance()
+    end
+    setSoulsealBalance(currentBalance)
+
     show()
     refreshList()
-    soulsealWindow.balancePanel.balanceLabel:setText(comma_value(getSoulsealBalance()))
 end
 
 function onResourceBalance(balance, _, resourceType)
-    if resourceType ~= ResourceTypes.SOULSEALS then
+    if resourceType ~= ResourceTypes.SOULSEAL_POINTS then
         return
     end
     if soulsealWindow and soulsealWindow:isVisible() then
-        soulsealWindow.balancePanel.balanceLabel:setText(comma_value(balance))
+        setSoulsealBalance(balance)
     end
 end
 

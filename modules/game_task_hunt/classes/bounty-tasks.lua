@@ -132,6 +132,12 @@ function TaskBounty.onServerData(header, monsters, talisman, preferreds)
     monsters = monsters or {}
     talisman = talisman or {}
 
+    if g_things.registerRaceDataFromPacket then
+        for _, monster in ipairs(monsters) do
+            g_things.registerRaceDataFromPacket(monster)
+        end
+    end
+
     -- Always update the kill tracker
     TaskBounty.updateTracker(monsters)
 
@@ -140,10 +146,18 @@ function TaskBounty.onServerData(header, monsters, talisman, preferreds)
     -- Header data
     local rerollPoints = tonumber(header.rerollPoints) or 0
     local claimDaily = tonumber(header.claimDaily) or 0
+
+    local displayMonsters = {}
+    for _, monster in ipairs(monsters) do
+        if (tonumber(monster.raceId) or 0) > 0 then
+            table.insert(displayMonsters, monster)
+        end
+    end
+
     -- Populate monster panels
     local container = taskHuntWindow:recursiveGetChildById('bountyTaskContainer')
     if container then
-        local monsterCount = #monsters
+        local monsterCount = #displayMonsters
 
         if monsterCount == 1 then
             -- Single monster (active task): use center panel (taskPanel2)
@@ -153,8 +167,9 @@ function TaskBounty.onServerData(header, monsters, talisman, preferreds)
             if panel1 then panel1:setVisible(false) end
             if panel3 then panel3:setVisible(false) end
             if panel2 then
-                local m = monsters[1]
+                local m = displayMonsters[1]
                 TaskBounty.populateTaskPanel(panel2, {
+                    taskIndex = tonumber(m.taskIndex) or 0,
                     raceId = tonumber(m.raceId) or 0,
                     currentKills = tonumber(m.currentKills) or 0,
                     totalKills = tonumber(m.totalKills) or 0,
@@ -172,9 +187,10 @@ function TaskBounty.onServerData(header, monsters, talisman, preferreds)
             for i = 1, 3 do
                 local panel = container:recursiveGetChildById('taskPanel' .. i)
                 if panel then
-                    if monsters[i] then
-                        local m = monsters[i]
+                    if displayMonsters[i] then
+                        local m = displayMonsters[i]
                         TaskBounty.populateTaskPanel(panel, {
+                            taskIndex = tonumber(m.taskIndex) or (i - 1),
                             raceId = tonumber(m.raceId) or 0,
                             currentKills = tonumber(m.currentKills) or 0,
                             totalKills = tonumber(m.totalKills) or 0,
@@ -273,8 +289,9 @@ local RARITY_BACKDROPS = {
 }
 
 function TaskBounty.populateTaskPanel(panel, data)
-    local raceId = data.raceId or 0
-    local rarity = data.rarity or 0
+    local taskIndex = tonumber(data.taskIndex) or 0
+    local raceId = tonumber(data.raceId) or 0
+    local rarity = tonumber(data.rarity) or 0
 
     -- Backdrop image and size based on rarity
     local backdrop = panel:recursiveGetChildById('backdrop')
@@ -359,7 +376,7 @@ function TaskBounty.populateTaskPanel(panel, data)
             selectBtn:setText('Select Task')
             selectBtn:setEnabled(true)
             selectBtn.onClick = function()
-                TaskBounty.selectTask(raceId)
+                TaskBounty.selectTask(taskIndex)
             end
         end
     end
@@ -435,8 +452,8 @@ function TaskBounty.rerollMonsters()
     g_game.bountyTaskAction(ACTION_REROLL, 0)
 end
 
-function TaskBounty.selectTask(raceId)
-    g_game.bountyTaskAction(ACTION_SELECT, raceId)
+function TaskBounty.selectTask(taskIndex)
+    g_game.bountyTaskAction(ACTION_SELECT, taskIndex)
 end
 
 function TaskBounty.claimReward(raceId)
@@ -444,7 +461,7 @@ function TaskBounty.claimReward(raceId)
 end
 
 function TaskBounty.changeDifficulty(difficultyId)
-    g_game.bountyTaskAction(ACTION_CHANGE_DIFFICULTY, difficultyId)
+    g_game.bountyTaskAction(ACTION_CHANGE_DIFFICULTY, (tonumber(difficultyId) or 1) - 1)
 end
 
 function TaskBounty.claimDaily()

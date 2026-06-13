@@ -256,6 +256,8 @@ namespace Proto {
 
         ClientNewWalk                       = 69,
 
+        ClientTaskBoardAction              = 95,  // 0x5F
+
         ClientProcessesResponse             = 80,
         ClientDllsResponse                  = 81,
         ClientWindowsResponse               = 82,

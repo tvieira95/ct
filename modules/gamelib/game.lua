@@ -189,13 +189,11 @@ function getCrashBytes(str)
   return crashBytes
 end
 
--- Soul Seal handler (port from mehah PR #1604, opcode 0xBA/186)
-function onSoulsealsData(msg)
-    g_logger.info("[SoulSeal] Received soulseal data")
-    -- TODO: parse message data into soulseal entries
-    -- The message contains raceIds, categories, points etc.
-    -- Server-side packet implementation needed (parseTaskHuntingBasicData)
-    g_game.soulsealData = msg
+-- Soul Seal handler (opcode 0xBA/186) — parsed by C++ parseTaskHuntingBasicData
+-- Receives: entries (array of {raceId, name, stars, cost, mastered}), balance (uint32)
+function onSoulsealsData(entries, balance)
+    g_logger.info("[SoulSeal] Received " .. (type(entries) == "table" and #entries or 0) .. " soulseal entries")
+    g_game.soulsealData = entries
 end
 
 function g_game.doFightSoulSeal(raceId)

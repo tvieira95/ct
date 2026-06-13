@@ -3,6 +3,7 @@
 local soulsealWindow = nil
 local cachedEntries = {}
 local selectedIndex = 0
+local cachedBalance = nil
 
 local SOULSEAL_CATEGORIES = {
     [1] = "Harmless",
@@ -20,22 +21,31 @@ end
 function terminate()
     disconnect(g_game, { onSoulsealsData = onSoulsealsData })
     hideWindow()
+    cachedBalance = nil
 end
 
-function onSoulsealsData(msg)
-    g_logger.info("[SoulSeal] Received soulseal data from server")
-    -- Parse the message (server sends raceIds, categories, points etc.)
-    -- For now, msg contains the raw InputMessage data
-    -- When server is implemented, this will be proper structured data
-    if not msg or type(msg) == "userdata" then
-        g_logger.info("[SoulSeal] Raw message received - server implementation pending")
-        return
-    end
+local function getSoulsealResourceBalance()
+    local player = g_game.getLocalPlayer()
+    if not player then return 0 end
+    if not ResourceTypes or not ResourceTypes.SOULSEAL_POINTS then return 0 end
+    return tonumber(player:getResourceBalance(ResourceTypes.SOULSEAL_POINTS)) or 0
+end
 
-    -- If server sends proper table data:
-    if type(msg) == "table" then
+local function resolveSoulsealBalance(balance)
+    local resolved = tonumber(balance)
+    if resolved ~= nil then
+        return resolved
+    end
+    return getSoulsealResourceBalance()
+end
+
+function onSoulsealsData(entries, balance)
+    g_logger.info("[SoulSeal] Received soulseal data from server")
+    cachedBalance = resolveSoulsealBalance(balance)
+
+    if type(entries) == "table" then
         cachedEntries = {}
-        for _, entry in ipairs(msg) do
+        for _, entry in ipairs(entries) do
             if type(entry) ~= "table" then
                 local raceId = tonumber(entry) or 0
                 table.insert(cachedEntries, {
@@ -47,14 +57,17 @@ function onSoulsealsData(msg)
                     outfit = nil,
                 })
             else
-                local name = entry.name or entry.displayName or ("Creature " .. tostring(entry.raceId or "?"))
+                local raceData = g_things.registerRaceDataFromPacket and g_things.registerRaceDataFromPacket(entry) or nil
+                local name = entry.name or ("Creature " .. tostring(entry.raceId or "?"))
+                local points = tonumber(entry.cost) or tonumber(entry.soulsealPoints) or 0
+                local done = tonumber(entry.mastered) or tonumber(entry.done) or 0
                 table.insert(cachedEntries, {
                     raceId = tonumber(entry.raceId) or 0,
-                    name = tostring(name),
-                    points = tonumber(entry.soulsealPoints) or 0,
-                    done = entry.done == true or entry.done == 1,
-                    category = tonumber(entry.category) or 0,
-                    outfit = entry.outfit,
+                    name = tostring((raceData and raceData.name) or name),
+                    points = points,
+                    done = done == 1,
+                    category = tonumber(entry.stars) or tonumber(entry.category) or 0,
+                    outfit = (raceData and raceData.outfit) or entry.outfit,
                 })
             end
         end
@@ -67,6 +80,7 @@ function showWindow()
         soulsealWindow:raise()
         soulsealWindow:show()
         refreshList()
+        updateBalance(cachedBalance)
         return
     end
 
@@ -85,7 +99,7 @@ function showWindow()
     end
 
     refreshList()
-    updateBalance()
+    updateBalance(cachedBalance)
 end
 
 function hideWindow()
@@ -149,16 +163,13 @@ function updateSelection()
     fightBtn:setEnabled(not entry.done)
 end
 
-function updateBalance()
+function updateBalance(balance)
     if not soulsealWindow or soulsealWindow:isDestroyed() then return end
     local pointsLabel = soulsealWindow:recursiveGetChildById("pointsLabel")
     if not pointsLabel then return end
 
-    local player = g_game.getLocalPlayer()
-    if player then
-        local balance = tonumber(player:getResourceBalance("soulseals")) or 0
-        pointsLabel:setText("Soulseals: " .. tostring(balance))
-    end
+    cachedBalance = resolveSoulsealBalance(balance)
+    pointsLabel:setText("Soulseals: " .. tostring(cachedBalance))
 end
 
 function doFight()

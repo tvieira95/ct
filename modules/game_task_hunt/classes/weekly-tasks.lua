@@ -72,6 +72,12 @@ end
 -- ─── Server data handler ─────────────────────────────────────────────
 
 function TaskWeekly.onServerData(header, monsters, items, difficulties)
+    if g_things.registerRaceDataFromPacket then
+        for _, monster in ipairs(monsters or {}) do
+            g_things.registerRaceDataFromPacket(monster)
+        end
+    end
+
     -- Always update the kill tracker
     if Tracker and Tracker.Weekly then
         Tracker.Weekly.loadFromServerData(monsters)
@@ -140,8 +146,8 @@ function TaskWeekly.onServerData(header, monsters, items, difficulties)
         })
     end
 
-    -- Determine if difficulty selection modal should show
-    data.selectedTaskDifficulty = (data.difficulty == 0)
+    -- First weekly open has no tasks yet; let the player choose difficulty.
+    data.selectedTaskDifficulty = (#data.monsters == 0 and #data.items == 0)
 
     TaskWeekly.loadData(data)
 end
@@ -679,7 +685,7 @@ function TaskWeekly.showDifficultyModal(data)
         btn.onClick = function()
             if not btn:isOn() then return end
             -- Send difficulty selection to server
-            g_game.weeklyTaskAction(ACTION_SELECT_DIFFICULTY, diff.id)
+            g_game.weeklyTaskAction(ACTION_SELECT_DIFFICULTY, (tonumber(diff.id) or 1) - 1)
             TaskWeekly.destroyModal()
         end
     end

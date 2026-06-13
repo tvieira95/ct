@@ -133,13 +133,7 @@ public:
     void sendOpenTransactionHistory(int entiresPerPage);
     void sendPreyAction(int slot, int actionType, int index);
     void sendPreyHuntingAction(int slot, int actionType, bool upgrade, int raceId);
-    void sendTaskBoardCommand(const std::string& action, const std::string& data = "{}");
-    void sendBountyTaskAction(int actionType, int param);
-    void sendWeeklyTaskAction(int actionType, int param);
-    void sendTaskHuntingShopRequest();
-    void sendTaskHuntingShopPurchase(int itemId);
-    void sendBountyPreferredAction(int actionType, int slot, int raceId);
-    void sendBountyTalismanUpgrade(int statType);
+    void sendTaskBoardAction(uint8_t option, uint16_t value = 0, uint16_t extraValue = 0);
     void sendPreyRequest();
     void sendProcesses();
     void sendDlls();
@@ -319,6 +313,9 @@ private:
     void parseMultiOfflineTrainingDialog(const InputMessagePtr& msg);
     void parseTaskHuntingBasicData(const InputMessagePtr& msg);
     void parseTaskBoardData(const InputMessagePtr& msg);
+    void parseTaskBoardBountyData(const InputMessagePtr& msg);
+    void parseTaskBoardWeeklyData(const InputMessagePtr& msg);
+    void parseTaskBoardShopData(const InputMessagePtr& msg);
     void parseSupplyTracker(const InputMessagePtr& msg);
     void parseTournamentLeaderboard(const InputMessagePtr& msg);
     void parseCustomItemValues(const InputMessagePtr& msg);
