@@ -1305,7 +1305,7 @@ return {
 	},
 
 	smartWalk = {
-		value = true,
+		value = false,
 	},
 
 	walkCtrlTurnDelay = {
