@@ -87,6 +87,36 @@ function g_mouse.getActiveGrabberCursor()
   return nil
 end
 
+function g_mouse.setGrabber(widget, mouse)
+  if not widget then
+    return false
+  end
+
+  g_mouse.grabbedMouse[widget] = mouse
+  if mouse ~= '' then
+    g_mouse.applyNativeCursor(mouse)
+  end
+  return true
+end
+
+function g_mouse.releaseGrabber(widget)
+  if not widget or g_mouse.grabbedMouse[widget] == nil then
+    return nil
+  end
+
+  local releasedMouse = g_mouse.grabbedMouse[widget]
+  g_mouse.grabbedMouse[widget] = nil
+
+  local nextMouse = g_mouse.getActiveGrabberCursor()
+  if nextMouse then
+    g_mouse.applyNativeCursor(nextMouse)
+  else
+    g_mouse.restoreNativeCursor()
+  end
+
+  return releasedMouse
+end
+
 function g_mouse.updateGrabber(widget, mouse)
   if not g_mouse.grabbedMouse[widget] then
     g_mouse.grabbedMouse[widget] = mouse

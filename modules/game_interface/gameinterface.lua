@@ -169,6 +169,7 @@ end
 function terminate()
   hookedMenuOptions = {}
   markThing = nil
+  cancelMouseTargetSelection(false)
 
   if healthCircleResizeEvent then
     removeEvent(healthCircleResizeEvent)
@@ -308,6 +309,7 @@ function onGameStart()
 end
 
 function onGameEnd()
+  cancelMouseTargetSelection(false)
   hide()
   modules.client_topmenu.getTopMenu():setImageColor('white')
   onPlayerUnload()
@@ -936,24 +938,47 @@ end
 
 function onMouseGrabberRelease(self, mousePosition, mouseButton)
   if mouseButton == MouseTouch then return end
-  if selectedThing == nil then return false end
-  if mouseButton == MouseLeftButton then
+  local thing = selectedThing
+  local action = selectedType
+
+  if thing and mouseButton == MouseLeftButton then
     local clickedWidget = gameRootPanel:recursiveGetChildByPos(mousePosition, false)
     if clickedWidget then
-      if selectedType == 'use' then
+      if action == 'use' then
         onUseWith(clickedWidget, mousePosition)
-      elseif selectedType == 'trade' then
+      elseif action == 'trade' then
         onTradeWith(clickedWidget, mousePosition)
       end
     end
   end
 
-  selectedThing = nil
-  g_mouse.updateGrabber(self, 'target')
-  g_mouse.popCursor('target')
-  self:ungrabMouse()
-  gameMapPanel:blockNextMouseRelease(true)
+  cancelMouseTargetSelection(true)
   return true
+end
+
+function cancelMouseTargetSelection(blockNextRelease)
+  local hadSelection = selectedThing ~= nil
+  selectedThing = nil
+  selectedType = nil
+  selectedSubtype = 0
+
+  if mouseGrabberWidget then
+    local releasedMouse = g_mouse.releaseGrabber(mouseGrabberWidget)
+    if releasedMouse == 'target' then
+      g_mouse.popCursor('target')
+    end
+    mouseGrabberWidget:ungrabMouse()
+  end
+
+  if blockNextRelease and gameMapPanel then
+    gameMapPanel:blockNextMouseRelease(true)
+  end
+
+  return hadSelection
+end
+
+function isMouseTargetSelectionActive()
+  return selectedThing ~= nil
 end
 
 function onUseWith(clickedWidget, mousePosition)
@@ -1002,13 +1027,14 @@ function startUseWith(thing, subType)
     if selectedThing then
       selectedThing = thing
       selectedType = 'use'
+      selectedSubtype = subType or 0
     end
     return
   end
   selectedType = 'use'
   selectedThing = thing
   selectedSubtype = subType or 0
-  g_mouse.updateGrabber(mouseGrabberWidget, 'target')
+  g_mouse.setGrabber(mouseGrabberWidget, 'target')
   mouseGrabberWidget:grabMouse()
   g_mouse.pushCursor('target')
 end
@@ -1024,7 +1050,8 @@ function startTradeWith(thing)
   end
   selectedType = 'trade'
   selectedThing = thing
-  g_mouse.updateGrabber(mouseGrabberWidget, 'target')
+  selectedSubtype = 0
+  g_mouse.setGrabber(mouseGrabberWidget, 'target')
   mouseGrabberWidget:grabMouse()
   g_mouse.pushCursor('target')
 end

@@ -73,9 +73,6 @@ void Mouse::addCursor(const std::string& name, const std::string& file, const Po
 
 void Mouse::pushCursor(const std::string& name)
 {
-    if (m_useNativeCursor)
-        return;
-
     if (g_graphicsThreadId != std::this_thread::get_id()) {
         g_graphicsDispatcher.addEvent(std::bind(&Mouse::pushCursor, this, name));
         return;
@@ -86,7 +83,8 @@ void Mouse::pushCursor(const std::string& name)
         return;
 
     int cursorId = it->second;
-    g_window.setMouseCursor(cursorId);
+    if(!m_useNativeCursor)
+        g_window.setMouseCursor(cursorId);
     std::lock_guard<std::mutex> lock(m_mutex);
     m_cursorStack.push_back(cursorId);
     return;
@@ -118,14 +116,20 @@ void Mouse::popCursor(const std::string& name)
             return;
     }
 
-    if(m_cursorStack.size() > 0)
-        g_window.setMouseCursor(m_cursorStack.back());
+    if(m_cursorStack.size() > 0) {
+        if(!m_useNativeCursor)
+            g_window.setMouseCursor(m_cursorStack.back());
+    }
     else {
-        auto it = m_cursors.find("native");
-        if (it != m_cursors.end())
-            g_window.setMouseCursor(it->second);
-        else
+        if(m_useNativeCursor) {
             g_window.restoreMouseCursor();
+        } else {
+            auto it = m_cursors.find("native");
+            if (it != m_cursors.end())
+                g_window.setMouseCursor(it->second);
+            else
+                g_window.restoreMouseCursor();
+        }
     }
 }
 

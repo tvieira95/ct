@@ -541,7 +541,9 @@ end
 
 function g_client.setInputLockWidget(widget)
     if widget ~= nil then
-        g_mouse.clearGrabber()
+        if not modules.game_interface or not modules.game_interface.isMouseTargetSelectionActive or not modules.game_interface.isMouseTargetSelectionActive() then
+            g_mouse.clearGrabber()
+        end
     end
     if g_ui.getCustomInputWidget() then
         g_ui.setInputLockWidget(nil)

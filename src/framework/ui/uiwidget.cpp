@@ -1701,10 +1701,12 @@ void UIWidget::onHoverChange(bool hovered)
 {
     if (m_changeCursorImage) {
         if (g_mouse.isUsingNativeCursor()) {
-            if (hovered && !g_mouse.isCursorChanged())
-                g_window.setSystemCursor(m_cursor);
-            else
-                g_window.restoreMouseCursor();
+            if (!g_mouse.isCursorChanged()) {
+                if (hovered)
+                    g_window.setSystemCursor(m_cursor);
+                else
+                    g_window.restoreMouseCursor();
+            }
         } else {
             if (hovered && !g_mouse.isCursorChanged())
                 g_mouse.pushCursor(m_cursor);
