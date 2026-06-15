@@ -30,6 +30,10 @@
 #include <framework/util/stats.h>
 #include <framework/util/extras.h>
 
+#include <array>
+#include <optional>
+#include <utility>
+
 WIN32Window::WIN32Window()
 {
     m_window = 0;
@@ -330,8 +334,13 @@ void WIN32Window::internalCreateGLContext()
 #ifdef OPENGL_ES
     PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
 
-    EGLint displayAttributes[3][5] =
+    EGLint displayAttributes[5][5] =
     { 
+        {
+            EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE,
+            EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE,
+            EGL_NONE,
+        },
         {
             EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
             EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE,
@@ -347,6 +356,11 @@ void WIN32Window::internalCreateGLContext()
             EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_D3D_WARP_ANGLE,
             EGL_NONE,
         },
+        {
+            EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE,
+            EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE,
+            EGL_NONE,
+        },
     };
 
     auto setupDisplay = [&](EGLDisplay display) -> bool {
@@ -359,23 +373,43 @@ void WIN32Window::internalCreateGLContext()
     };
 
     if (eglGetPlatformDisplayEXT) {
-        std::string args(GetCommandLineA());
-        if (args.find("-dx11") != std::string::npos) {
-            setupDisplay(eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes[0]));
-        } else if (args.find("-dx9") != std::string::npos) {
-            setupDisplay(eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes[1]));
-        } else if (args.find("-warp") != std::string::npos) {
-            setupDisplay(eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes[2]));
-        } else {
-            for (EGLint* attributes : displayAttributes) {
-                if (setupDisplay(eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, attributes)))
+        const std::array<std::pair<const char*, size_t>, 5> rendererOptions = {{
+            {"-vulkan", 0},
+            {"-dx11", 1},
+            {"-dx9", 2},
+            {"-warp", 3},
+            {"-opengl", 4},
+        }};
+
+        std::optional<size_t> requestedBackend;
+        for (const auto& [option, index] : rendererOptions) {
+            if (g_app.hasStartupOption(option)) {
+                requestedBackend = index;
+                break;
+            }
+        }
+
+        const auto tryBackend = [&](size_t index) {
+            return setupDisplay(eglGetPlatformDisplayEXT(
+                EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes[index]));
+        };
+
+        if (requestedBackend && !tryBackend(*requestedBackend)) {
+            g_logger.warning("Requested graphics backend is unavailable, trying automatic fallback.");
+        }
+
+        if (!m_eglDisplay) {
+            for (const auto& [option, index] : rendererOptions) {
+                if (requestedBackend && index == *requestedBackend)
+                    continue;
+                if (tryBackend(index))
                     break;
             }
         }
     }        
     
     if (!m_eglDisplay && !setupDisplay(eglGetDisplay(m_deviceContext))) {
-        g_logger.fatal("DirectX is not supported, try to use OpenGL version or install latest directx drivers. Also, make sure that your folder contains libEGL.dll, libGLESv2.dll and d3dcompiler_47.dll.");
+        g_logger.fatal("No supported graphics backend was found. Update your graphics drivers and make sure libEGL.dll, libGLESv2.dll and d3dcompiler_47.dll are present.");
     }
 
     static int configList[] = {

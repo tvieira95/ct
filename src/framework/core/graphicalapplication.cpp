@@ -139,6 +139,7 @@ void GraphicalApplication::run()
     m_framebuffer->resize(g_painter->getResolution());
     m_mapFramebuffer = g_framebuffers.createFrameBuffer();
     m_mapFramebuffer->resize(g_painter->getResolution());
+    m_mapFramebuffer->setSmooth(m_mapSmooth.load());
 
     ticks_t lastRender = stdext::micros();
 
@@ -151,6 +152,7 @@ void GraphicalApplication::run()
     std::mutex mutex;
     std::thread worker([&] {
         g_dispatcherThreadId = std::this_thread::get_id();
+        ticks_t uiBuildLast = 0;
         while (!m_stopping) {
             m_processingFrames.addFrame();
             {
@@ -160,7 +162,9 @@ void GraphicalApplication::run()
             }
 
             mutex.lock();
-            if (drawQueue && drawMapQueue && (m_maxFps > 0 || g_window.hasVerticalSync())) { // old drawQueue not processed yet
+            const bool cacheUI = m_cacheUI.load();
+            const bool queuesPending = cacheUI ? drawMapQueue != nullptr : drawQueue && drawMapQueue;
+            if (queuesPending && (m_maxFps > 0 || g_window.hasVerticalSync())) {
                 mutex.unlock();
                 AutoStat s(STATS_MAIN, "Sleep");
                 stdext::millisleep(1);
@@ -186,16 +190,20 @@ void GraphicalApplication::run()
             drawMapForegroundQueue = g_drawQueue;
             mutex.unlock();
 
-            {
-                AutoStat s(STATS_MAIN, "DrawForeground");
-                g_drawQueue = std::make_shared<DrawQueue>();
-                g_ui.render(Fw::ForegroundPane);
-            }
+            const ticks_t uiNow = stdext::micros();
+            if (!cacheUI || m_mustRepaint.load() || uiNow - uiBuildLast >= 16666) {
+                {
+                    AutoStat s(STATS_MAIN, "DrawForeground");
+                    g_drawQueue = std::make_shared<DrawQueue>();
+                    g_ui.render(Fw::ForegroundPane);
+                }
 
-            mutex.lock();
-            drawQueue = g_drawQueue;
-            g_drawQueue = nullptr;
-            mutex.unlock();
+                mutex.lock();
+                drawQueue = g_drawQueue;
+                g_drawQueue = nullptr;
+                mutex.unlock();
+                uiBuildLast = uiNow;
+            }
 
             g_graphs[GRAPH_CPU_FRAME_TIME].addValue(stdext::millis() - renderStart);
 
@@ -210,6 +218,8 @@ void GraphicalApplication::run()
 
     std::shared_ptr<DrawQueue> toDrawQueue, toDrawMapQueue, toDrawMapForegroundQueue;
     ticks_t lastFrame = stdext::millis();
+    ticks_t uiCacheLastRender = 0;
+    Size uiCacheSize;
     while (!m_stopping) {
         m_iteration += 1;
 
@@ -225,16 +235,17 @@ void GraphicalApplication::run()
 
         int frameDelay = m_maxFps <= 0 ? 0 : (1000000 / m_maxFps);
         ticks_t now = stdext::micros();
-        if (lastRender + frameDelay > now && !m_mustRepaint) {
+        if (lastRender + frameDelay > now && !m_mustRepaint.load()) {
             AutoStat s(STATS_RENDER, "Sleep");
             stdext::microsleep(std::min<ticks_t>(lastRender + frameDelay - now, 1000));
             continue;
         }
 
         mutex.lock();
+        const bool cacheUI = m_cacheUI.load();
         if ((!drawQueue && !toDrawQueue) || 
             ((!drawMapQueue || !drawMapForegroundQueue) && isOnline) || 
-            (m_mustRepaint && !drawQueue)) {
+            (m_mustRepaint.load() && !drawQueue && !cacheUI)) {
             mutex.unlock();
             AutoStat s(STATS_RENDER, "Wait");
             stdext::millisleep(1);
@@ -248,7 +259,7 @@ void GraphicalApplication::run()
 
         g_adaptiveRenderer.newFrame();
         m_graphicsFrames.addFrame();
-        m_mustRepaint = false;
+        const bool repaintRequested = m_mustRepaint.exchange(false);
         lastRender = stdext::micros() > lastRender + frameDelay * 2 ? stdext::micros() : lastRender + frameDelay;
 
         g_painter->resetDraws();
@@ -311,7 +322,27 @@ void GraphicalApplication::run()
 
         {
             AutoStat s(STATS_RENDER, "DrawSecondForeground");
-            toDrawQueue->draw(DRAW_AFTER_MAP);
+            if (cacheUI) {
+                const Size uiResolution = g_painter->getResolution();
+                const ticks_t uiNow = stdext::micros();
+                if (!m_uiFramebuffer)
+                    m_uiFramebuffer = g_framebuffers.createFrameBuffer();
+
+                if (uiResolution != uiCacheSize || repaintRequested || uiNow - uiCacheLastRender >= 16666) {
+                    m_uiFramebuffer->resize(uiResolution);
+                    m_uiFramebuffer->bind();
+                    g_painter->clear(Color::alpha);
+                    toDrawQueue->draw(DRAW_AFTER_MAP);
+                    m_uiFramebuffer->release();
+                    uiCacheLastRender = uiNow;
+                    uiCacheSize = uiResolution;
+                }
+
+                g_painter->resetState();
+                m_uiFramebuffer->draw(Rect(0, 0, uiResolution));
+            } else {
+                toDrawQueue->draw(DRAW_AFTER_MAP);
+            }
         }
 
         {
@@ -352,6 +383,7 @@ void GraphicalApplication::run()
 
     m_framebuffer = nullptr;
     m_mapFramebuffer = nullptr;
+    m_uiFramebuffer = nullptr;
     g_drawQueue = nullptr;
     m_stopping = false;
     m_running = false;
@@ -399,6 +431,8 @@ void GraphicalApplication::inputEvent(InputEvent event)
     m_onInputEvent = true;
     g_ui.inputEvent(event);
     m_onInputEvent = false;
+    if (m_cacheUI.load() && event.type != Fw::MouseMoveInputEvent)
+        m_mustRepaint = true;
 }
 
 void GraphicalApplication::doScreenshot(std::string file)
@@ -483,9 +517,14 @@ void GraphicalApplication::scale(float value)
 
 void GraphicalApplication::setSmooth(bool value)
 {
-    if (!m_mapFramebuffer) return;
+    m_mapSmooth = value;
+    const FrameBufferPtr mapFramebuffer = m_mapFramebuffer;
+    if (!mapFramebuffer)
+        return;
 
-    m_mapFramebuffer->setSmooth(value);
+    g_graphicsDispatcher.addEvent([mapFramebuffer, value] {
+        mapFramebuffer->setSmooth(value);
+    });
 }
 
 void GraphicalApplication::doMapScreenshot(std::string fileName)

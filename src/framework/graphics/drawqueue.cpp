@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cmath>
 #include <stack>
 #include <framework/graphics/drawqueue.h>
 #include <framework/graphics/painter.h>
@@ -14,6 +16,11 @@
 std::shared_ptr<DrawQueue> g_drawQueue;
 
 namespace {
+
+int clampToRange(int value, int minValue, int maxValue)
+{
+    return std::min(std::max(value, minValue), maxValue);
+}
 
 bool beginFlip(uint8_t direction, const Point& center)
 {
@@ -230,21 +237,49 @@ void DrawQueueConditionMark::end(DrawQueue* queue)
     g_painter->resetShaderProgram();
 }
 
-void DrawQueue::setFrameBuffer(const Rect& dest, const Size& size, const Rect& src)
+void DrawQueue::setFrameBuffer(const Rect& dest, const Size& size, const Rect& src, float renderScale)
 {
     m_useFrameBuffer = true;
-    m_frameBufferSize = size;
+    m_renderScale = std::max(1.f, renderScale);
+    const float maxTextureSize = static_cast<float>(std::max(1, g_graphics.getMaxTextureSize()));
+    const float maxFramebufferScale = std::min(maxTextureSize / std::max(1, size.width()),
+                                               maxTextureSize / std::max(1, size.height()));
+    m_scaling = std::clamp(maxFramebufferScale / m_renderScale, 1.f / m_renderScale, 1.f);
+    if (m_scaling < 1.f) {
+        static bool warned = false;
+        if (!warned) {
+            warned = true;
+            g_logger.warning(stdext::format("Smooth Retro operating at reduced quality: renderScale=%.2f, maxTextureSize=%d, achieved scaling=%.2f",
+                m_renderScale, g_graphics.getMaxTextureSize(), m_scaling));
+        }
+    }
+    const float coordinateScale = m_renderScale * m_scaling;
+
+    m_frameBufferSize = Size(
+        static_cast<int>(std::ceil(size.width() * coordinateScale)),
+        static_cast<int>(std::ceil(size.height() * coordinateScale))
+    );
     m_frameBufferDest = dest;
-    m_frameBufferSrc = src;
-    size_t max_size = std::max(m_frameBufferSize.width(), m_frameBufferSize.height());
-    while(max_size > 2048u) {
-        max_size /= 2;
-        m_scaling /= 2.f;
+
+    int srcLeft = static_cast<int>(std::floor(src.left() * coordinateScale));
+    int srcTop = static_cast<int>(std::floor(src.top() * coordinateScale));
+    int srcRight = static_cast<int>(std::ceil((src.left() + src.width()) * coordinateScale)) - 1;
+    int srcBottom = static_cast<int>(std::ceil((src.top() + src.height()) * coordinateScale)) - 1;
+
+    if (coordinateScale > 1.01f && srcRight - srcLeft > 2 && srcBottom - srcTop > 2) {
+        ++srcLeft;
+        ++srcTop;
+        --srcRight;
+        --srcBottom;
     }
-    if (m_scaling < 0.99f) {
-        m_frameBufferSize = Size(2048, 2048);
-        m_frameBufferSrc = m_frameBufferSrc * m_scaling;
-    }
+
+    const int maxRight = std::max(0, m_frameBufferSize.width() - 1);
+    const int maxBottom = std::max(0, m_frameBufferSize.height() - 1);
+    srcLeft = clampToRange(srcLeft, 0, maxRight);
+    srcTop = clampToRange(srcTop, 0, maxBottom);
+    srcRight = clampToRange(srcRight, srcLeft, maxRight);
+    srcBottom = clampToRange(srcBottom, srcTop, maxBottom);
+    m_frameBufferSrc = Rect(Point(srcLeft, srcTop), Point(srcRight, srcBottom));
 }
 
 void DrawQueue::addText(BitmapFontPtr font, const std::string& text, const Rect& screenCoords, Fw::AlignmentFlag align, const Color& color, bool shadow)
@@ -323,8 +358,9 @@ void DrawQueue::draw(DrawType drawType)
     });
 
     Size originalResolution = g_painter->getResolution();
-    if (m_scaling > 0.f && m_scaling < 0.99f) {
-        Size resolution = originalResolution * (1.f / m_scaling);
+    const float coordinateScale = m_renderScale * m_scaling;
+    if (coordinateScale > 0.f && std::abs(coordinateScale - 1.f) > 0.01f) {
+        Size resolution = originalResolution * (1.f / coordinateScale);
         Matrix3 projectionMatrix = { 
             2.0f / resolution.width(),  0.0f,                      0.0f,
             0.0f,                    -2.0f / resolution.height(),  0.0f,

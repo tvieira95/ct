@@ -21,6 +21,7 @@
  */
 
 #include <framework/core/application.h>
+#include <framework/core/config.h>
 #include <framework/core/resourcemanager.h>
 #include <framework/core/eventdispatcher.h>
 #include <framework/luaengine/luainterface.h>
@@ -28,6 +29,64 @@
 #include <framework/platform/crashhandler.h>
 #include <framework/platform/platformwindow.h>
 #include <client/client.h>
+
+#include <algorithm>
+#include <array>
+#include <stdexcept>
+
+namespace {
+
+bool hasRendererArgument(const std::vector<std::string>& args)
+{
+    static const std::array<std::string, 5> rendererArguments = {
+        "-vulkan", "-dx11", "-warp", "-dx9", "-opengl"
+    };
+
+    return std::any_of(args.begin(), args.end(), [](const std::string& arg) {
+        return std::find(rendererArguments.begin(), rendererArguments.end(), arg) != rendererArguments.end();
+    });
+}
+
+void applyConfiguredRenderer(std::vector<std::string>& args)
+{
+#if defined(WIN32) && defined(OPENGL_ES)
+    if (hasRendererArgument(args))
+        return;
+
+    Config startupConfig;
+    if (!startupConfig.load("/config.otml") || !startupConfig.exists("engine")) {
+        args.emplace_back("-dx11");
+        return;
+    }
+
+    const std::string configuredEngine = startupConfig.getValue("engine");
+    int engine = 2;
+    try {
+        size_t parsedCharacters = 0;
+        int parsed = std::stoi(configuredEngine, &parsedCharacters);
+        if (parsedCharacters != configuredEngine.size())
+            throw std::invalid_argument("trailing characters");
+        engine = parsed;
+    } catch (const std::exception&) {
+        engine = 2;
+        g_logger.warning(stdext::format("Invalid graphics engine value '%s'; using DirectX 11.", configuredEngine));
+    }
+
+    switch (engine) {
+        case 1: args.emplace_back("-vulkan"); break;
+        case 2: args.emplace_back("-dx11"); break;
+        case 3: args.emplace_back("-warp"); break;
+        case 4: args.emplace_back("-dx9"); break;
+        case 5: args.emplace_back("-opengl"); break;
+        default:
+            g_logger.warning(stdext::format("Unknown graphics engine id %i; using DirectX 11.", engine));
+            args.emplace_back("-dx11");
+            break;
+    }
+#endif
+}
+
+}
 
 int main(int argc, const char* argv[]) {
     std::vector<std::string> args(argv, argv + argc);
@@ -62,6 +121,9 @@ int main(int argc, const char* argv[]) {
         return 0; // started other executable
     }
 
+    g_resources.setupWriteDir(g_app.getName(), g_app.getCompactName());
+    applyConfiguredRenderer(args);
+
     // initialize application framework and otclient
     g_app.init(args);
     g_client.init(args);
@@ -73,7 +135,6 @@ int main(int argc, const char* argv[]) {
     }
 
     // find script init.lua and run it
-    g_resources.setupWriteDir(g_app.getName(), g_app.getCompactName());
     g_resources.setup();
 
     if (!g_lua.safeRunScript("init.lua")) {

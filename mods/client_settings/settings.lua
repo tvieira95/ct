@@ -263,7 +263,25 @@ end
 function online()
   local benchmark = g_clock.millis()
   tmpResetActions = {}
-  g_app.setSmooth(GameOptions:getOption("antialiasing") == 2)
+  local gameMapPanel = m_interface and m_interface.getMapPanel()
+  if gameMapPanel then
+    gameMapPanel:setAntiAliasingMode(GameOptions:getOption("antialiasing"))
+  else
+    local retryEvent
+    local retries = 0
+    retryEvent = cycleEvent(function()
+      local panel = m_interface and m_interface.getMapPanel()
+      if panel then
+        panel:setAntiAliasingMode(GameOptions:getOption("antialiasing"))
+        retryEvent:cancel()
+      else
+        retries = retries + 1
+        if retries >= 10 then
+          retryEvent:cancel()
+        end
+      end
+    end, 500)
+  end
 
   if Options.getAutoSwtichPreset() then
     autoSwitchHotkey()
@@ -2259,6 +2277,7 @@ function resetGraphics()
     setTempOption('hdmodeBox', true)
     setTempOption('fullscreen', false)
     setTempOption('dontStretchShrink', false)
+    setTempOption('cacheUI', false)
     setTempOption('vsync', false)
     setTempOption('noFrameCheckBox', false)
     setTempOption('backgroundFrameRate', 100)

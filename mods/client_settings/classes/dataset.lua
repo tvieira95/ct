@@ -980,10 +980,15 @@ return {
 	},
 
   engine = {
-		value = -1,
+		value = 2,
         apply = function(value)
-            if getOption("engine") ~= -1 and value ~= getOption("engine") then
-              displayInfoBox("Info", "You have selected a different graphics engine. Restart ATC for this change to take effect.")
+            return true
+        end,
+        tempApply = function(value)
+            local graphicsWindow = GameOptions:getLoadedWindow('graphics')
+            local optionsVisible = optionsWindow and optionsWindow:isVisible() and graphicsWindow and graphicsWindow:isVisible()
+            if optionsVisible and value ~= GameOptions:getOption('engine') then
+                displayInfoBox(tr('Graphics Engine'), tr('The graphics engine change will take effect after restarting the client.'))
             end
             return true
         end,
@@ -991,12 +996,11 @@ return {
 
 
 	antialiasing = {
-		value = 3,
+		value = 1,
         apply = function(value)
-            if value == 2 then
-                g_app.setSmooth(true)
-            else
-                g_app.setSmooth(false)
+            local gameMapPanel = m_interface and m_interface.getMapPanel()
+            if gameMapPanel then
+                gameMapPanel:setAntiAliasingMode(value)
             end
             return true
         end,
@@ -1087,6 +1091,14 @@ return {
         apply = function(value)
             local gameMapPanel = m_interface.getMapPanel()
             gameMapPanel:setCrosshairVisible(value)
+            return true
+        end,
+	},
+
+	cacheUI = {
+		value = false,
+        apply = function(value)
+            g_app.setCacheUI(value)
             return true
         end,
 	},
