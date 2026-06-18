@@ -33,6 +33,7 @@
 #include "luavaluecasts_client.h"
 #include "protocolgame.h"
 #include "protocolcodes.h"
+#include "thingtypemanager.h"
 
 #include <framework/util/extras.h>
 #include <framework/graphics/graph.h>
@@ -42,6 +43,27 @@
 #include <limits>
 
 Game g_game;
+
+namespace
+{
+const ThingTypePtr& findItemThingTypeByClientOrServerId(uint16_t itemId)
+{
+    uint16_t clientId = 0;
+    const auto& clientItemType = g_things.findItemTypeByClientId(itemId);
+    if(clientItemType) {
+        clientId = itemId;
+    } else {
+        const auto& serverItemType = g_things.getItemType(itemId);
+        if(serverItemType)
+            clientId = serverItemType->getClientId();
+    }
+
+    if(clientId == 0 || !g_things.isValidDatId(clientId, ThingCategoryItem))
+        return g_things.getNullThingType();
+
+    return g_things.getThingType(clientId, ThingCategoryItem);
+}
+}
 
 namespace {
 
@@ -392,7 +414,11 @@ void Game::processContainerAddItem(int containerId, const ItemPtr& item, int slo
         return;
     }
 
+    if(m_localPlayer)
+        m_localPlayer->invalidateInventoryCountCache(item);
+
     container->onAddItem(item, slot);
+    g_lua.callGlobalField("g_game", "updateInventoryItems");
 }
 
 void Game::processContainerUpdateItem(int containerId, int slot, const ItemPtr& item)
@@ -402,7 +428,14 @@ void Game::processContainerUpdateItem(int containerId, int slot, const ItemPtr& 
         return;
     }
 
+    if(m_localPlayer) {
+        const ItemPtr oldItem = container->getItem(slot - container->getFirstIndex());
+        m_localPlayer->invalidateInventoryCountCache(oldItem);
+        m_localPlayer->invalidateInventoryCountCache(item);
+    }
+
     container->onUpdateItem(slot, item);
+    g_lua.callGlobalField("g_game", "updateInventoryItems");
 }
 
 void Game::processContainerRemoveItem(int containerId, int slot, const ItemPtr& lastItem)
@@ -412,7 +445,14 @@ void Game::processContainerRemoveItem(int containerId, int slot, const ItemPtr& 
         return;
     }
 
+    if(m_localPlayer) {
+        const ItemPtr oldItem = container->getItem(slot - container->getFirstIndex());
+        m_localPlayer->invalidateInventoryCountCache(oldItem);
+        m_localPlayer->invalidateInventoryCountCache(lastItem);
+    }
+
     container->onRemoveItem(slot, lastItem);
+    g_lua.callGlobalField("g_game", "updateInventoryItems");
 }
 
 void Game::processInventoryChange(int slot, const ItemPtr& item)
@@ -421,6 +461,7 @@ void Game::processInventoryChange(int slot, const ItemPtr& item)
         item->setPosition(Position(65535, slot, 0));
 
     m_localPlayer->setInventoryItem((Otc::InventorySlot)slot, item);
+    g_lua.callGlobalField("g_game", "updateInventoryItems");
 }
 
 void Game::processChannelList(const std::vector<std::tuple<int, std::string> >& channelList)
@@ -1495,22 +1536,29 @@ void Game::equipItem(const ItemPtr& item)
 {
     if (!item || !canPerformGameAction())
         return;
-    if (getFeature(Otc::GameItemTierByte)) {
+    if (getFeature(Otc::GameItemTierByte) || (getFeature(Otc::GameThingUpgradeClassification) && item->getClassification() > 0)) {
         m_protocolGame->sendEquipItemWithTier(item->getId(), item->getTier());
         return;
     }
-    m_protocolGame->sendEquipItem(item->getId(), item->getCountOrSubType());
+    m_protocolGame->sendEquipItem(item->getId());
 }
 
-void Game::equipItemId(int itemId, int subType)
+void Game::equipItemId(int itemId, int tier)
 {
     if (!canPerformGameAction())
         return;
     if (getFeature(Otc::GameItemTierByte)) {
-        m_protocolGame->sendEquipItemWithTier(itemId, subType);
+        m_protocolGame->sendEquipItemWithTier(itemId, tier);
         return;
     }
-    m_protocolGame->sendEquipItem(itemId, subType);
+    if (getFeature(Otc::GameThingUpgradeClassification)) {
+        const auto& thingType = findItemThingTypeByClientOrServerId(itemId);
+        if (thingType && thingType->getClassification() > 0) {
+            m_protocolGame->sendEquipItemWithTier(itemId, tier);
+            return;
+        }
+    }
+    m_protocolGame->sendEquipItem(itemId);
 }
 
 void Game::mount(bool mount)
@@ -1945,6 +1993,24 @@ void Game::newPing()
     m_newPingEvent = g_dispatcher.scheduleEvent([] {
         g_game.newPing();
     }, m_newPingDelay);
+}
+
+void Game::enableTimerInventory(bool enable)
+{
+    m_inventoryTimerEnabled = enable;
+    g_app.repaint();
+}
+
+void Game::enableTimerContainer(bool enable)
+{
+    m_containerTimerEnabled = enable;
+    g_app.repaint();
+}
+
+void Game::enableTimerUnused(bool enable)
+{
+    m_unusedTimerEnabled = enable;
+    g_app.repaint();
 }
 
 void Game::changeMapAwareRange(int xrange, int yrange)
