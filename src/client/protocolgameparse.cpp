@@ -3141,6 +3141,20 @@ void ProtocolGame::parsePlayerInventory(const InputMessagePtr& msg)
 {
     const uint16_t size = msg->getU16();
     constexpr uint16_t MAX_INVENTORY_TYPES = 10000;
+    if(!g_game.getFeature(Otc::GamePackedPlayerInventory)) {
+        if(const LocalPlayerPtr& localPlayer = g_game.getLocalPlayer())
+            localPlayer->setInventoryCountCache({});
+
+        for(uint16_t i = 0; i < size && msg->getUnreadSize() >= 5; ++i) {
+            msg->getU16();
+            msg->getU8();
+            msg->getU16();
+        }
+
+        g_lua.callGlobalField("g_game", "updateInventoryItems");
+        return;
+    }
+
     if(size > MAX_INVENTORY_TYPES) {
         g_logger.warning(stdext::format("[protocol][parsePlayerInventory]: inventory size %d exceeds maximum allowed %d", size, MAX_INVENTORY_TYPES));
     }
@@ -3150,7 +3164,7 @@ void ProtocolGame::parsePlayerInventory(const InputMessagePtr& msg)
     for(uint16_t i = 0; i < size; ++i) {
         const uint16_t itemId = msg->getU16();
         const uint8_t attribute = msg->getU8();
-        const uint32_t amount = g_game.getFeature(Otc::GamePackedPlayerInventory) ? readPackedCount1500(msg) : msg->getU16();
+        const uint32_t amount = readPackedCount1500(msg);
 
         if(i >= MAX_INVENTORY_TYPES)
             continue;

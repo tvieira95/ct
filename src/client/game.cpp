@@ -153,6 +153,9 @@ void Game::resetGameStates()
     m_walkPrediction = 0;
     m_coins = 0;
     m_transferableCoins = 0;
+    m_inventoryTimerEnabled = true;
+    m_containerTimerEnabled = true;
+    m_unusedTimerEnabled = true;
     m_newPingIds.clear();
     m_unjustifiedPoints = UnjustifiedPoints();
 
@@ -2011,6 +2014,13 @@ void Game::enableTimerUnused(bool enable)
 {
     m_unusedTimerEnabled = enable;
     g_app.repaint();
+}
+
+bool Game::isAstraItemStateEnabled()
+{
+    return getFeature(Otc::GameDisplayItemDuration) ||
+        getFeature(Otc::GameDisplayItemCharges) ||
+        getFeature(Otc::GamePackedPlayerInventory);
 }
 
 void Game::changeMapAwareRange(int xrange, int yrange)
