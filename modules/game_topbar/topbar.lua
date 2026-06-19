@@ -1013,7 +1013,7 @@ end
 
 function onMagicLevelChange(localPlayer, magiclevel, percent)
     setSkillValue('Magic', magiclevel + localPlayer:getMagicLoyalty())
-    setSkillPercent('Magic', (percent / 100), tr('You have %s percent to go', convertSkillPercent(10000 - percent)))
+    setSkillPercent('Magic', percent, tr('You have %s percent to go', convertSkillPercent(10000 - percent)))
     onBaseMagicLevelChange(localPlayer, localPlayer:getBaseMagicLevel())
 end
 
@@ -1038,7 +1038,7 @@ function onSkillChange(localPlayer, id, level, percent)
     local skillName = skillNames[id]
 
     setSkillValue(skillNames[id], (level + localPlayer:getSkillLoyalty(id - 1)))
-    setSkillPercent(skillNames[id], (percent / 100), tr('You have %s percent to go', convertSkillPercent(10000 - percent)))
+    setSkillPercent(skillNames[id], percent, tr('You have %s percent to go', convertSkillPercent(10000 - percent)))
     setSkillBase(skillNames[id], level, localPlayer:getSkillBaseLevel(id - 1), localPlayer:getSkillLoyalty(id - 1))
 end
 
