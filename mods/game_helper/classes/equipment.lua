@@ -31,15 +31,21 @@ local equipConfig = {
 }
 
 -- Uses shared decay mapping from ItemsDatabase (gamelib/items.lua)
-
 -- Get the equipped version of an item ID
 local function getEquippedId(itemId)
-  return ItemsDatabase.getEquippedId(itemId)
+  if ItemsDatabase and ItemsDatabase.getEquippedId then
+    return ItemsDatabase.getEquippedId(itemId)
+  end
+  return itemId
 end
 
 -- Check if an equipped item matches a config item (considering decay)
 local function itemMatchesConfig(equippedItemId, configItemId)
-  return ItemsDatabase.itemMatchesDecay(equippedItemId, configItemId)
+  if ItemsDatabase and ItemsDatabase.itemMatchesDecay then
+    return ItemsDatabase.itemMatchesDecay(equippedItemId, configItemId)
+  end
+
+  return equippedItemId == configItemId
 end
 
 -- Helper function to get equipPanel (lazy initialization)
@@ -488,19 +494,107 @@ function equip.onItemSelected(self, mousePosition, mouseButton, targetButton, ta
     return true
   end
 
-  -- Check if item is a ring or amulet
-  local thingType = g_things.getThingType(itemId, ThingCategoryItem)
-  if not thingType then
-    modules.game_textmessage.displayFailureMessage(tr('Invalid item!'))
-    return true
-  end
-
-  local clothSlot = thingType:getClothSlot()
   local slotType = ""
 
-  if clothSlot == InventorySlotFinger then
+  local thingType = g_things.getThingType(itemId, ThingCategoryItem)
+  local clothSlot = thingType and thingType:getClothSlot() or 0
+
+  -- Add rings and necklaces
+  -- Neclackes with charges or duration only
+  local fallbackSlots = {
+    [9301] = "amulet", -- bonfire amulet
+    [3056] = "amulet", -- bronze amulet
+    [23542] = "amulet", -- collar of blue plasma
+    [23543] = "amulet", -- collar of green plasma
+    [50152] = "amulet", -- collar of orange plasma
+    [23544] = "amulet", -- collar of red plasma
+    [3085] = "amulet", -- dragon necklace
+    [3082] = "amulet", -- elven amulet
+    [50154] = "amulet", -- enchanted merudi brooch
+    [30344] = "amulet", -- enchanted pendulet
+    [30342] = "amulet", -- enchanted sleep shawl
+    [39233] = "amulet", -- enchanted turtle amulet
+    [22061] = "amulet", -- enchanted werewolf amulet
+    [3083] = "amulet", -- garlic necklace
+    [16108] = "amulet", -- gill necklace
+    [815] = "amulet", -- glacier amulet
+    [21183] = "amulet", -- glooth amulet
+    [51275] = "amulet", -- greater garlic necklace 
+    [9303] = "amulet", -- levianthan's amulet 
+    [816] = "amulet", -- lightning pendant 
+    [817] = "amulet", -- magma amulet
+    [13990] = "amulet", -- necklace of the deep
+    [16113] = "amulet", -- prismatic necklace
+    [3084] = "amulet", -- protection amulet
+    [9302] = "amulet", -- sacred tree amulet
+    [9304] = "amulet", -- shockwave amulet
+    [3054] = "amulet", -- silver amulet
+    [3081] = "amulet", -- stone skin amulet
+    [3045] = "amulet", -- strange talisman
+    [814] = "amulet", -- terra amulet
+  -- Neclackes for unEquip
+    [23526] = "amulet", -- collar of blue plasma (equiped)
+    [23527] = "amulet", -- collar of green plasma (equiped)
+    [23528] = "amulet", -- collar of red plasma (equiped)
+    [50153] = "amulet", -- collar of orange plasma (equiped)
+    [50155] = "amulet", -- enchanted merudri brooch (equiped)
+    [30345] = "amulet", -- enchanted pendulet (equiped)
+    [30343] = "amulet", -- enchanted sleep shawl (equiped)
+    [39234] = "amulet", -- enchanted turtle amulet (equiped)
+    [22134] = "amulet", -- enchanted werewolf amulet (equiped)
+
+
+  -- Rings with charges or duration only
+    [3092] = "ring",   -- axe ring
+    [39180] = "ring",   -- charged alicorn ring
+    [39186] = "ring",   -- charged arboreal ring
+    [39183] = "ring",   -- charged arcanomancer ring
+    [39177] = "ring",   -- charged spitthorn ring
+    [3093] = "ring",   -- club ring
+    [6299] = "ring",   -- death ring
+    [3097] = "ring",   -- dwarven ring
+    [31557] = "ring",   -- enchanted blister ring
+    [3051] = "ring",   -- energy ring
+    [3052] = "ring",   -- life ring
+    [3048] = "ring",   -- might ring
+    [3050] = "ring",   -- power ring
+    [16114] = "ring",   -- prismatic ring
+    [23529] = "ring",   -- ring of blue plasma
+    [23531] = "ring",   -- ring of green plasma
+    [3098] = "ring",   -- ring of healing
+    [50150] = "ring",   -- ring of orange plasma
+    [23533] = "ring",   -- ring of red plasma
+    [32621] = "ring",   -- enchanted ring of souls
+    [45642] = "ring",   -- ring of temptation
+    [12669] = "ring",   -- star ring
+    [3091] = "ring",   -- sword ring
+    [3053] = "ring",   -- time ring
+  -- Rings for unEquip
+    [3095] = "ring",   -- axe ring (equiped)
+    [3096] = "ring",   -- club ring (equiped)
+    [6300] = "ring",   -- death ring (equiped)
+    [3099] = "ring",   -- dwarven ring (equiped)
+    [3088] = "ring",   -- energy ring (equiped)
+    [3089] = "ring",   -- life ring (equiped)
+    [3087] = "ring",   -- power ring (equiped)
+    [16264] = "ring",   -- prismatic ring (equiped)
+    [23530] = "ring",   -- ring of blue plasma (equiped)
+    [23532] = "ring",   -- ring of green plasma (equiped)
+    [3100] = "ring",   -- ring of healing (equiped)
+    [50151] = "ring",   -- ring of orange plasma (equiped)
+    [23534] = "ring",   -- ring of red plasma (equiped)
+    [32635] = "ring",   -- enchanted ring of souls (equiped)
+    [12670] = "ring",   -- star ring (equiped)
+    [3094] = "ring",   -- sword ring (equiped)
+    [3090] = "ring",   -- time ring (equiped)
+  }
+
+  local slotFinger = InventorySlotFinger or 9
+  local slotNeck = InventorySlotNeck or 2
+
+  if clothSlot == slotFinger or fallbackSlots[itemId] == "ring" then
     slotType = "ring"
-  elseif clothSlot == InventorySlotNeck then
+  elseif clothSlot == slotNeck or fallbackSlots[itemId] == "amulet" then
     slotType = "amulet"
   else
     modules.game_textmessage.displayFailureMessage(tr('This item is not a ring or amulet!'))
