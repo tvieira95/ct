@@ -32,8 +32,6 @@
 
 #define LUA_LIB
 
-#include <limits.h>
-
 extern "C" {
 #if defined(_MSC_VER) || defined(ANDROID)
 #include <luajit/lua.h>
@@ -379,3 +377,4 @@ int luaopen_bit32 (lua_State *L) {
 }
 
 #undef trim
+
