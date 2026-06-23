@@ -366,6 +366,8 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_game", "bountyPreferredAction", &Game::bountyPreferredAction, &g_game);
     g_lua.bindSingletonFunction("g_game", "bountyTalismanUpgrade", &Game::bountyTalismanUpgrade, &g_game);
     g_lua.bindSingletonFunction("g_game", "preyRequest", &Game::preyRequest, &g_game);
+	g_lua.bindSingletonFunction("g_game", "characterBazaarRequest", &Game::characterBazaarRequest, &g_game);
+	g_lua.bindSingletonFunction("g_game", "characterBazaarCreate", &Game::characterBazaarCreate, &g_game);
     g_lua.bindSingletonFunction("g_game", "openWheel", &Game::openWheel, &g_game);
     g_lua.bindSingletonFunction("g_game", "sendOpenDestinyWheel", &Game::openWheel, &g_game);
     g_lua.bindSingletonFunction("g_game", "sendApplyWheelPoints", &Game::sendApplyWheelPoints, &g_game);

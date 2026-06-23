@@ -192,6 +192,7 @@ namespace Proto {
         GameServerKillTracker               = 209,
         GameServerBossCooldown              = 44,  // 0x2C
         GameServerCharmActivated            = 45,  // 0x2D
+        GameServerCharacterBazaar           = 46,  // 0x2E custom Astra Bazaar
         GameServerImbuementActivated        = 48,  // 0x30
         GameServerSpecialSkillActivated     = 49,  // 0x31
         GameServerVipAdd                    = 210,
@@ -259,6 +260,7 @@ namespace Proto {
         ClientNewWalk                       = 69,
 
         ClientTaskBoardAction              = 95,  // 0x5F
+        ClientCharacterBazaar               = 94,  // 0x5E custom Astra Bazaar
 
         ClientProcessesResponse             = 80,
         ClientDllsResponse                  = 81,

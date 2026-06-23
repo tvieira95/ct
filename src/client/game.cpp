@@ -1915,6 +1915,20 @@ void Game::preyRequest()
     m_protocolGame->sendPreyRequest();
 }
 
+void Game::characterBazaarRequest()
+{
+	if (!canPerformGameAction())
+		return;
+	m_protocolGame->sendCharacterBazaarRequest();
+}
+
+void Game::characterBazaarCreate(uint32_t startPrice, uint32_t durationSeconds, const std::string& description)
+{
+	if (!canPerformGameAction())
+		return;
+	m_protocolGame->sendCharacterBazaarCreate(startPrice, durationSeconds, description);
+}
+
 void Game::openWheel(uint32_t playerId)
 {
     if (!canPerformGameAction())

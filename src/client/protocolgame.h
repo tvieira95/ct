@@ -138,6 +138,8 @@ public:
     void sendPreyAction(int slot, int actionType, int index);
     void sendPreyHuntingAction(int slot, int actionType, bool upgrade, int raceId);
     void sendTaskBoardAction(uint8_t option, uint16_t value = 0, uint16_t extraValue = 0);
+	void sendCharacterBazaarRequest();
+	void sendCharacterBazaarCreate(uint32_t startPrice, uint32_t durationSeconds, const std::string& description);
     void sendPreyRequest();
     void sendProcesses();
     void sendDlls();
@@ -318,6 +320,7 @@ private:
     void parseTaskHuntingBasicData(const InputMessagePtr& msg);
     void parseSoulsealsData(const InputMessagePtr& msg);
     void parseTaskBoardData(const InputMessagePtr& msg);
+	void parseCharacterBazaar(const InputMessagePtr& msg);
     void parseTaskBoardBountyData(const InputMessagePtr& msg);
     void parseTaskBoardWeeklyData(const InputMessagePtr& msg);
     void parseTaskBoardShopData(const InputMessagePtr& msg);

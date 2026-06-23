@@ -540,7 +540,7 @@ if g_game then
     'sendRequestPrestigeArenaLiveMatches', 'sendRequestPrestigeInspect',
     'sendTeleport', 'sendUpdateAutoAimList', 'sendVipGroup',
     'sendWatchPrestigeArenaLiveMatch', 'sendWeaponProficiencyAction',
-    'sendWeaponProficiencyApply', 'setCamViewerSpeed', 'setDead',
+    'sendWeaponProficiencyApply', 'characterBazaarRequest', 'characterBazaarCreate', 'setCamViewerSpeed', 'setDead',
     'setFramingTarget', 'setHighlightingTarget', 'setLootValueState',
     'setRsa', 'setStringVersion', 'setWalkProtection', 'sortContainer',
     'stashWithdraw', 'stowItem', 'stowItemContainerStack',

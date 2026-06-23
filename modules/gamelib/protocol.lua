@@ -10,6 +10,7 @@ GameServerOpcodes = {
     GameServerPing                      = 30,
     GameServerChallenge                 = 31,
     GameServerDeath                     = 40,
+	GameServerCharacterBazaar          = 46, -- 0x2E custom Astra Bazaar
 
     -- all in game opcodes must be greater than 50
     GameServerFirstGameOpcode           = 50,
@@ -113,6 +114,7 @@ ClientOpcodes = {
     ClientLeaveGame                     = 20,
     ClientPing                          = 29,
     ClientPingBack                      = 30,
+	ClientCharacterBazaar               = 94, -- 0x5E custom Astra Bazaar
 
     -- all in game opcodes must be equal or greater than 50
     ClientFirstGameOpcode               = 50,

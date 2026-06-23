@@ -1376,6 +1376,30 @@ void ProtocolGame::sendTaskBoardAction(uint8_t option, uint16_t value, uint16_t 
     g_game.disableBotCall();
 }
 
+void ProtocolGame::sendCharacterBazaarRequest()
+{
+	auto msg = std::make_shared<OutputMessage>();
+	msg->addU8(Proto::ClientCharacterBazaar);
+	msg->addU8(0x01);
+	send(msg);
+}
+
+void ProtocolGame::sendCharacterBazaarCreate(uint32_t startPrice, uint32_t durationSeconds, const std::string& description)
+{
+	if (description.size() > 512) {
+		g_logger.error("Character Bazaar description exceeds 512 characters.");
+		return;
+	}
+
+	auto msg = std::make_shared<OutputMessage>();
+	msg->addU8(Proto::ClientCharacterBazaar);
+	msg->addU8(0x02);
+	msg->addU32(startPrice);
+	msg->addU32(durationSeconds);
+	msg->addString(description);
+	send(msg);
+}
+
 void ProtocolGame::sendPreyRequest()
 {
     auto msg = std::make_shared<OutputMessage>();
