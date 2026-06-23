@@ -329,8 +329,8 @@ public:
     void bountyPreferredAction(int actionType, int slot, int raceId);
     void bountyTalismanUpgrade(int statType);
     void preyRequest();
-	void characterBazaarRequest();
-	void characterBazaarCreate(uint32_t startPrice, uint32_t durationSeconds, const std::string& description);
+    void characterBazaarRequest();
+    void characterBazaarCreate(uint32_t startPrice, uint32_t durationSeconds, const std::string& description);
     void openWheel(uint32_t playerId);
     void sendStartOfflineTraining(uint8_t skillType);
     void soulsealFightAction(uint16_t raceId);

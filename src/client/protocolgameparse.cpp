@@ -5083,29 +5083,30 @@ void ProtocolGame::parseSoulsealsData(const InputMessagePtr& msg)
 
 void ProtocolGame::parseCharacterBazaar(const InputMessagePtr& msg)
 {
-	const uint8_t action = msg->getU8();
-	if (action == 0x01) {
-		const bool canAuction = msg->getU8() != 0;
-		const uint32_t minimumLevel = msg->getU32();
-		const uint32_t minimumPrice = msg->getU32();
-		const uint32_t minimumDuration = msg->getU32();
-		const uint32_t maximumDuration = msg->getU32();
-		const uint32_t auctionFee = msg->getU32();
-		const uint8_t commissionPercent = msg->getU8();
-		const uint32_t transferableCoins = msg->getU32();
-		const std::string reason = msg->getString();
-		g_lua.callGlobalField("g_game", "onCharacterBazaarRequirements", canAuction, minimumLevel, minimumPrice,
-		                      minimumDuration, maximumDuration, auctionFee, commissionPercent, transferableCoins, reason);
-		return;
-	}
+    const uint8_t action = msg->getU8();
+    if (action == 0x01) {
+        const bool canAuction = msg->getU8() != 0;
+        const uint32_t minimumLevel = msg->getU32();
+        const uint32_t minimumPrice = msg->getU32();
+        const uint32_t minimumDuration = msg->getU32();
+        const uint32_t maximumDuration = msg->getU32();
+        const uint32_t auctionFee = msg->getU32();
+        const uint8_t commissionPercent = msg->getU8();
+        const uint32_t transferableCoins = msg->getU32();
+        // The TFS contract always includes this string (empty when allowed).
+        const std::string reason = msg->getString();
+        g_lua.callGlobalField("g_game", "onCharacterBazaarRequirements", canAuction, minimumLevel, minimumPrice,
+                              minimumDuration, maximumDuration, auctionFee, commissionPercent, transferableCoins, reason);
+        return;
+    }
 
-	if (action == 0x02) {
-		const bool success = msg->getU8() != 0;
-		g_lua.callGlobalField("g_game", "onCharacterBazaarCreateResult", success, msg->getString());
-		return;
-	}
+    if (action == 0x02) {
+        const bool success = msg->getU8() != 0;
+        g_lua.callGlobalField("g_game", "onCharacterBazaarCreateResult", success, msg->getString());
+        return;
+    }
 
-	throw stdext::exception(stdext::format("[ProtocolGame::parseCharacterBazaar] Unknown action: %d", action));
+    throw stdext::exception(stdext::format("[ProtocolGame::parseCharacterBazaar] Unknown action: %d", action));
 }
 
 void ProtocolGame::parseTaskBoardData(const InputMessagePtr& msg)

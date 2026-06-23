@@ -114,7 +114,6 @@ ClientOpcodes = {
     ClientLeaveGame                     = 20,
     ClientPing                          = 29,
     ClientPingBack                      = 30,
-	ClientCharacterBazaar               = 94, -- 0x5E custom Astra Bazaar
 
     -- all in game opcodes must be equal or greater than 50
     ClientFirstGameOpcode               = 50,
@@ -123,6 +122,7 @@ ClientOpcodes = {
     ClientExtendedOpcode                = 50,
 
     -- NOTE: add any custom opcodes in this range
+	ClientCharacterBazaar               = 94, -- 0x5E custom Astra Bazaar
     -- 51 - 99
 
     -- original tibia ONLY
